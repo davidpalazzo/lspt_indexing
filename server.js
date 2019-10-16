@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 5000;
 const app = express();
 let Word = require('./model.word');   // import models used to store information
 //do we need a Document model?
-
+ 
 //using mongo client
 const MongoClient = require('mongodb').MongoClient;
 const uri = "mongodb+srv://LSPIndexing:LSPIndexing@largescaleindexing-lsdil.mongodb.net/test?retryWrites=true&w=majority";
@@ -42,24 +42,31 @@ app.get('/',function(req,res){
     res.status(200).send({'hello':"world"});
 })
 /*
-
+Returns a list of documents that contains all documents that contain every word for a specific query.
 */
 app.post('/relevantDocsIntersection', function(req,res){
     // req.body is the document text transformation is sending to us
 
 });
+/*
+Returns a list of documents that contains all documents with any word of a specific query
+*/
 app.post('/relevantDocsUnion', function(req,res){
     // req.body is the document text transformation is sending to us
 
 });
+/*
+Returns a list of documents that contain the query exactly
+*/
 app.post('/exactmatch', function(req,res){
     // req.body is the document text transformation is sending to us
 
 });
-app.post('/docsInOrder', function(req,res){
-    // req.body is the document text transformation is sending to us
+// app.post('/docsInOrder', function(req,res){
+//     // req.body is the document text transformation is sending to us
 
-});
+// });
+// A call that either updates or adds indexing for a specific document.
 //only existing document: 5da65f2592f67f000015296c
 app.post('/:id/all_words_and_ngrams', function(req,res){
     // parse out words count and occurrence list, add to it and send it back
@@ -82,9 +89,19 @@ app.post('/:id/all_words_and_ngrams', function(req,res){
         //else (id exists) idk what we should do
     }
 });
+//NEW VERSION
+// A call that either updates or adds indexing for a specific document.
+//only existing document: 5da65f2592f67f000015296c
+app.post('/:id/all_words_and_ngrams', function(req,res){
+    // parse out words count and occurrence list, add to it and send it back
+    let id = req.params.id;
+    for( i = 0 ; i < req.body.Words.WordCounts.length ; i++){
+        // req.body is the document text transformation is sending to us
+        // FORM: https://lspt-fall-19.slack.com/files/UMWB42VHB/FNHBNHFFU/proglang-pa1.json?origin_team=TMTDVPRKP
+        logicLayer.addDocument(req.body.Words.WordCounts[i])
+        //SEND req.body.Words.WordCounts[i] TO logic layer
+    }
+});
 
 // launch our backend into a port
 app.listen(PORT, () => console.log(`LISTENING ON PORT ${PORT}`));
-
-  client.close();
-});
