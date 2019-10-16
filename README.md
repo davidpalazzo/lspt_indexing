@@ -1,4 +1,10 @@
-How to use server.js (api)
+###How to test:
+you must have installed pytest through pip:
+```pip install pytest```
+write test cases in test.py
+
+
+###How to use server.js (api)
 1. you need node
 2. make sure you have no other node processess running on port 5000
 	- to kill all node processes:  pkill nodejs or pkill node
