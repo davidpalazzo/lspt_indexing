@@ -35,9 +35,15 @@ app.use(bodyParser.json());
 // const cors = require('cors');
 // app.use(cors());
 
+/*
+test route to check for connection
+*/
 app.get('/',function(req,res){
     res.status(200).send({'hello':"world"});
 })
+/*
+
+*/
 app.post('/relevantDocsIntersection', function(req,res){
     // req.body is the document text transformation is sending to us
 
