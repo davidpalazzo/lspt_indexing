@@ -35,7 +35,9 @@ app.use(bodyParser.json());
 // const cors = require('cors');
 // app.use(cors());
 
-
+app.get('/',function(req,res){
+    res.status(200).send({'hello':"world"});
+})
 app.post('/relevantDocsIntersection', function(req,res){
     // req.body is the document text transformation is sending to us
 
@@ -56,7 +58,7 @@ app.post('/docsInOrder', function(req,res){
 app.post('/:id/all_words_and_ngrams', function(req,res){
     // parse out words count and occurrence list, add to it and send it back
     let id = req.params.id;
-    for( i = 0 ; i < length(req.body.Words.WordCounts) ; i++){
+    for( i = 0 ; i < req.body.Words.WordCounts.length ; i++){
         // req.body is the document text transformation is sending to us
         // FORM: https://lspt-fall-19.slack.com/files/UMWB42VHB/FNHBNHFFU/proglang-pa1.json?origin_team=TMTDVPRKP
         let text = req.body.Words.WordCounts[i].Text;
@@ -64,8 +66,9 @@ app.post('/:id/all_words_and_ngrams', function(req,res){
         let occurrences = req.body.Words.WordCounts.Occurences;
         
         //we can find by text since text will be unique to each db entrance
-        collection.find({"text":text}).then((dbWord)=>{//TODO: where is db defined?
-            let toSave = {id:{"count":count,"occurrences":occurrences}}
+        collection.findOne({"text":text}, (dbWord)=>{
+            console.log(dbWord)//TODO: MongoError: no primary server available
+            let toSave = {"document":id,"count":count,"occurrences":occurrences}
             dbWord.occurrences.push(toSave);
             dbWord.save().catch((err)=>res.send({'err':err}))
         }).catch((err)=>res.status(400).send(err));
