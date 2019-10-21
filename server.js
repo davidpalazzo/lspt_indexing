@@ -41,14 +41,8 @@ app.post('/relevantDocsIntersection', function(req,res){
     if (words.length<1){
         res.status(500).send("invalid body",req.body);
     }
-    let intersectDocs = logicLayer.getDocumentsWithWord(words[0]);
-    for( i = 1 ; i < words.length && intersectDocs.length>0 ; i++){
-        //finds docs that have words[i] in it and 
-        //intersects the resulting docs with the original set of docs
-        let docsForWord = logicLayer.getDocumentsWithWord(words[i]);
-        intersectDocs = intersectDocs.filter(value => docsForWord.includes(value));
-    }
-    res.status(200).send(documents);
+    let intersectDocs = logicLayer.getIntersectingDocs(words);
+    res.status(200).send(intersectDocs);
 });
 /*
 Returns a list of documents that contains all documents with any word of a specific query
@@ -80,10 +74,18 @@ app.post('/exactmatch', function(req,res){
     }res.status(200).send(documents);
     
 });
-// app.post('/docsInOrder', function(req,res){
-//     // req.body is the document text transformation is sending to us
+/*
+returns list of documents that 
+1) have all the words
+2) have all the words in the order they appear in the request
+3) may have words in between them (not exact)
+*/
+app.post('/docsInOrder', function(req,res){
+    // req.body is the document text transformation is sending to us
+    let words = req.body.words;//array
+    let documents = logicLayer.getDocsInOrder(req.body.words)
 
-// });
+});
 // A call that either updates or adds indexing for a specific document.
 //only existing document: 5da65f2592f67f000015296c
 // app.post('/:id/all_words_and_ngrams', function(req,res){
@@ -126,6 +128,7 @@ Things I need from logicLayer:
     logicLayer.getDocumentsWithBigram(words);
     logicLayer.getDocumentsWithWord(words);
     logicLayer.getDocumentsWithNgram(words.length,words);
+    logicLayer.getIntersectingDocs(words);
 
 */
 
