@@ -18,16 +18,6 @@ client.connect(err => {
  // perform actions on the collection object
 
 
-//using mongoose
-// const uri = "mongodb://PEAKE:mongoDB1!@ds017175.mlab.com:17175/heroku_ht20w3xq";
-// mongoose.connect( uri, { useNewUrlParser: true });
-// const connection = mongoose.connection;
-// connection.once('open', function() {
-//     console.log("MongoDB database connection established successfully");
-// })
-// connection.on("error", console.error.bind(console, "MongoDB connection error:"));
-
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -43,53 +33,82 @@ app.get('/',function(req,res){
 })
 /*
 Returns a list of documents that contains all documents that contain every word for a specific query.
+requires at least one word
 */
 app.post('/relevantDocsIntersection', function(req,res){
     // req.body is the document text transformation is sending to us
-
+    let words = req.body.words;//array
+    if (words.length<1){
+        res.status(500).send("invalid body",req.body);
+    }
+    let intersectDocs = logicLayer.getIntersectingDocs(words);
+    res.status(200).send(intersectDocs);
 });
 /*
 Returns a list of documents that contains all documents with any word of a specific query
 */
 app.post('/relevantDocsUnion', function(req,res){
     // req.body is the document text transformation is sending to us
-
-});
+    let words = req.body.words;//array
+    let documents;
+    for( i = 0 ; i < words.length ; i++){
+        documents.push(logicLayer.getDocumentsWithWord(words[i]));
+    }
+    res.status(200).send(documents);
+ });
 /*
 Returns a list of documents that contain the query exactly
 */
 app.post('/exactmatch', function(req,res){
     // req.body is the document text transformation is sending to us
+    let words = req.body.words;//array
+    let documents;
+    if(words.length == 3){
+        documents.push(logicLayer.getDocumentsWithTrigram(words));
+    }else if(words.length == 2){
+        documents.push(logicLayer.getDocumentsWithBigram(words));
+    }else if(words.length == 1){
+        documents.push(logicLayer.getDocumentsWithWord(words));
+    }else{
+        documents.push(logicLayer.getDocumentsWithNgram(words.length,words));    
+    }res.status(200).send(documents);
+    
+});
+/*
+returns list of documents that 
+1) have all the words
+2) have all the words in the order they appear in the request
+3) may have words in between them (not exact)
+*/
+app.post('/docsInOrder', function(req,res){
+    // req.body is the document text transformation is sending to us
+    let words = req.body.words;//array
+    let documents = logicLayer.getDocsInOrder(req.body.words)
 
 });
-// app.post('/docsInOrder', function(req,res){
-//     // req.body is the document text transformation is sending to us
-
-// });
 // A call that either updates or adds indexing for a specific document.
 //only existing document: 5da65f2592f67f000015296c
-app.post('/:id/all_words_and_ngrams', function(req,res){
-    // parse out words count and occurrence list, add to it and send it back
-    let id = req.params.id;
-    for( i = 0 ; i < req.body.Words.WordCounts.length ; i++){
-        // req.body is the document text transformation is sending to us
-        // FORM: https://lspt-fall-19.slack.com/files/UMWB42VHB/FNHBNHFFU/proglang-pa1.json?origin_team=TMTDVPRKP
-        let text = req.body.Words.WordCounts[i].Text;
-        let count = req.body.Words.WordCounts[i].Count;
-        let occurrences = req.body.Words.WordCounts.Occurences;
+// app.post('/:id/all_words_and_ngrams', function(req,res){
+//     // parse out words count and occurrence list, add to it and send it back
+//     let id = req.params.id;
+//     for( i = 0 ; i < req.body.Words.WordCounts.length ; i++){
+//         // req.body is the document text transformation is sending to us
+//         // FORM: https://lspt-fall-19.slack.com/files/UMWB42VHB/FNHBNHFFU/proglang-pa1.json?origin_team=TMTDVPRKP
+//         let text = req.body.Words.WordCounts[i].Text;
+//         let count = req.body.Words.WordCounts[i].Count;
+//         let occurrences = req.body.Words.WordCounts.Occurences;
         
-        //we can find by text since text will be unique to each db entrance
-        collection.findOne({"text":text}, (dbWord)=>{
-            console.log(dbWord)//TODO: MongoError: no primary server available
-            let toSave = {"document":id,"count":count,"occurrences":occurrences}
-            dbWord.occurrences.push(toSave);
-            dbWord.save().catch((err)=>res.send({'err':err}))
-        }).catch((err)=>res.status(400).send(err));
-        //if document id is not in existing word, add toSave to word.occurrences
-        //else (id exists) idk what we should do
-    }
-});
-//NEW VERSION
+//         //we can find by text since text will be unique to each db entrance
+//         collection.findOne({"text":text}, (dbWord)=>{
+//             console.log(dbWord)//TODO: MongoError: no primary server available
+//             let toSave = {"document":id,"count":count,"occurrences":occurrences}
+//             dbWord.occurrences.push(toSave);
+//             dbWord.save().catch((err)=>res.send({'err':err}))
+//         }).catch((err)=>res.status(400).send(err));
+//         //if document id is not in existing word, add toSave to word.occurrences
+//         //else (id exists) idk what we should do
+//     }
+// });
 // A call that either updates or adds indexing for a specific document.
 //only existing document: 5da65f2592f67f000015296c
 app.post('/:id/all_words_and_ngrams', function(req,res){
@@ -102,6 +121,16 @@ app.post('/:id/all_words_and_ngrams', function(req,res){
         //SEND req.body.Words.WordCounts[i] TO logic layer
     }
 });
+/*
+Things I need from logicLayer:
+    logicLayer.addDocument(req.body.Words.WordCounts[i]);
+    logicLayer.getDocumentsWithTrigram(words);
+    logicLayer.getDocumentsWithBigram(words);
+    logicLayer.getDocumentsWithWord(words);
+    logicLayer.getDocumentsWithNgram(words.length,words);
+    logicLayer.getIntersectingDocs(words);
+
+*/
 
 // launch our backend into a port
 app.listen(PORT, () => console.log(`LISTENING ON PORT ${PORT}`));
