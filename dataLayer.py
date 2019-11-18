@@ -1,16 +1,176 @@
-# let Word = require('./model.word');   // import models used to store information
-# //do we need a Document model?
- 
-# //using mongo client
-# const MongoClient = require('mongodb').MongoClient;
-# const uri = "mongodb+srv://LSPIndexing:LSPIndexing@largescaleindexing-lsdil.mongodb.net/test?retryWrites=true&w=majority";
-# const client = new MongoClient(uri, { useNewUrlParser: true });
-# var collection;
-# client.connect(err => {
-#   collection = client.db("LargeScaleIndex").collection("index");
+import pprint
 
-#   client.close();
-# });
-#####################################################################################
-# above is the js code that needs to be translated to py 
-#####################################################################################
+import pymongo
+from pymongo import MongoClient
+
+# TODO: DataLayer is going to apply indexing mechanism in order to accelerate the queries
+# TODO: upgrade from non-indexing to indexing key, removing duplicate if necessary
+# TODO: consider to move the LRU to the data layer?
+
+'''
+Configuration of the data base, specified as constants.
+if more privacy is required, this should be loaded from document,
+and use authentication of accessing database
+'''
+
+PORT = 27017
+HOST = "localhost"
+DATABASE = "test_storage"
+COLLECTION = "test-collection"
+
+
+class DataLayer:
+
+    def __init__(self):
+        client = MongoClient(HOST, PORT)
+        self.collection = client[DATABASE][COLLECTION]
+
+        # result = self.collection.create_index([('text', pymongo.ASCENDING)], unique=True)
+        # if result:
+        #     print("create index success")
+
+    '''
+    Description: put the list of contents into the database.
+    Parameters: “contents” is a list of word objects defined by our database schema in ‘Detailed Sub-Component Design’. 
+                Each is associated with a map of documents, with document ID as the key, and another map as the value, 
+                which contains the TF, IDF, and list of occurences(position). The text may or may not exist in the database,
+                it is the responsibility of the data layer to update the existing entry.
+    WorkFlow/Side Effect: Instead of directly replacing the entry with input given, 
+                the function would first retrieve the existing data, loop through to check if in each entry of “documents”,
+                the document ID associated with this word already exists, and if so, replace the entry with the input. 
+                If not, add the non-existent entry to the map of “documents”.
+    Output: true if added successfully, false if exceptions occur.
+    Example Input:
+        [
+          {
+             "text": "Lambda",
+             "documents":
+                 {
+                     "5da65f292f67f000015296c": {
+                         "tf": 0.308,
+                         "idf": 2.996,
+                         "occurrences": [1, 4, 10, 13]
+                     }
+        
+                   "2kn3sdf0012nh19287560d": {
+                       ....
+                   }
+               },
+          }
+         {
+               "text": "Test",
+               "documents": {....}
+           } 
+        ]
+    '''
+
+    def put(self, contents):
+        # Currently just loop through the content and apply insert one
+        # Later support insert many
+        insert_ids = list()
+        for content in contents:
+            id = self.collection.insert_one(content).inserted_id
+            insert_ids.append(id)
+        return insert_ids
+
+    '''
+    Description: get a list of words from the database
+    Parameters: texts is a list of words from the query.
+    WorkFlow/Side Effect: Retrieve and directly return, no modification required in the database
+    Output: A list of document mappings, with document ID as key, and a map of  TF, IDF, occurrence, etc as the value. 
+            If the text could not be found in the database, an empty list is returned.
+    Example output: Shows return value when input [“Lambda”, “Test”]
+        [   
+          "5da65f292f67f000015296c": {
+                 "tf": 0.308,
+                 "idf": 2.996,
+                 "occurrences": [1, 4, 10, 13]
+           },
+    
+          "2kn3sdf0012nh19287560d": {
+                ....
+           }    
+        ]
+    '''
+
+    def get(self, texts):
+        # Currently just search text one by one,
+        # Later can apply find to search for multiple result
+        result_list = list()
+        for text in texts:
+            query = {"text": text}
+            count = self.collection.count_documents(query)
+            print("there are {} document with {}", count, query)
+            result = self.collection.find_one(query)
+            result_list.append(result)
+        return result_list
+
+    '''
+    Description: get_by_document get a word from the database with documentID specified
+    Parameters: text is the word, documentID is the specific document ID
+    WorkFlow/Side Effect: Retrieve and directly return, no modification in the database required.
+    Output: A map containing the text, documentID, TF, IDF and occurrences(position) of the word in the document.
+    Example output: Shows return value with “text” = “Lambda”, “documentID” = “5da65f292f67f000015296c”
+        {
+           "text": "Lambda",
+           "documentID": "5da65f292f67f000015296c",
+           "content": {
+               "tf": 0.308,
+               "idf": 2.996,
+               "occurrences": [1, 4, 10, 13]
+           }
+        }
+    '''
+
+    def get_by_document(self, text, document):
+        pass
+
+    '''
+    Description: Deletes occurrences of documentID for all words in the wordList. 
+    Parameters: documentID is the identifying string for a specific document, wordList is a list of words that occur in that document.
+    WorkFlow/Side Effect: 
+                Loop through the wordList, and delete the entry in the documents list for the given word, 
+                where the key is the specified documentID.
+    Output: The documentID will be returned for a sanity check and “status” is the operation status. 
+            If the delete operation is successful, the status code would be 1. 
+            If the document is not found in any word in the wordList the code would be 0, 
+            otherwise it would be -1 (detailed exception code type would be identified in later development).
+    Example output:
+        {
+           "documentID": "5da65f292f67f000015296c",
+           “status": <1, 0, -1>
+        }
+    '''
+
+    def delete_document(self, document, word_list):
+        pass
+
+
+if __name__ == "__main__":
+    # test local mongo db establishment
+    word = [
+        {
+            "text": "Lambda",
+            "documents":
+                {
+                    "5da65f292f67f000015296c": {
+                        "tf": 0.308,
+                        "idf": 2.996,
+                        "occurrences": [1, 4, 10, 13]
+                    },
+
+                    "2kn3sdf0012nh19287560d": {
+                        "tf": 0.416,
+                        "idf": 3.0,
+                        "occurrences": [1, 4]
+                    }
+                }
+        },
+    ]
+
+    dataLayer = DataLayer()
+    dataLayer.put(word)
+    results = dataLayer.get(["Lambda"])
+
+    for result in results:
+        pprint.pprint(result)
