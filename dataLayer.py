@@ -2,6 +2,8 @@ import pprint
 
 import pymongo
 from pymongo import MongoClient
+from bson.son import SON
+from bson.code import Code
 
 # TODO: DataLayer is going to apply indexing mechanism in order to accelerate the queries
 # TODO: upgrade from non-indexing to indexing key, removing duplicate if necessary
@@ -25,9 +27,9 @@ class DataLayer:
         client = MongoClient(HOST, PORT)
         self.collection = client[DATABASE][COLLECTION]
 
-        # result = self.collection.create_index([('text', pymongo.ASCENDING)], unique=True)
-        # if result:
-        #     print("create index success")
+        success = self.collection.create_index([('text', pymongo.ASCENDING)], unique=False)
+        if success:
+            print("create index on [text] success")
 
     '''
     Description: put the list of contents into the database.
@@ -69,8 +71,8 @@ class DataLayer:
         # Later support insert many
         insert_ids = list()
         for content in contents:
-            id = self.collection.insert_one(content).inserted_id
-            insert_ids.append(id)
+            obj_id = self.collection.insert_one(content).inserted_id
+            insert_ids.append(obj_id)
         return insert_ids
 
     '''
@@ -100,9 +102,9 @@ class DataLayer:
         for text in texts:
             query = {"text": text}
             count = self.collection.count_documents(query)
-            print("there are {} document with {}", count, query)
-            result = self.collection.find_one(query)
-            result_list.append(result)
+            print("there are {} document with {}".format(count, query))
+            one = self.collection.find_one(query)
+            result_list.append(one)
         return result_list
 
     '''
@@ -145,12 +147,69 @@ class DataLayer:
     def delete_document(self, document, word_list):
         pass
 
+    def aggregation(self, text):
+        group = self.collection.aggregate([
+            {"$match": {"text": text}},
+        ])
+
+        return group
+
+    def adv_aggregation(self):
+        mapper = Code("""
+            function () {
+                emit(this.text, 1);
+            }
+        """)
+
+        reducer = Code("""
+            function (key, values) {
+                var total = 0;
+                for (var i = 0; i < values.length; i ++){
+                    total += values[i];
+                }
+                return total;
+            }
+        """)
+
+        result = self.collection.map_reduce(mapper, reducer, "my_results")
+        print(result)
+        for doc in result.find():
+            pprint.pprint(doc)
+
+    def adv_aggregation2(self):
+        mapper = Code("""
+            function () {
+                emit(this.text, this.documents);
+            }
+        """)
+
+        reducer = Code("""
+            function (key, values) {
+                var obj = {};
+                for (var i = 0; i < values.length; i++) {
+                    for(let key in values[i]){
+                        obj[key] = values[i][key];
+                    } 
+                }
+                return obj;
+            }
+        """)
+
+        result = self.collection.map_reduce(mapper, reducer, "my_results2")
+        print(result)
+        for doc in result.find():
+            pprint.pprint(doc)
+
+    def remove_text(self, text):
+        success = self.collection.delete_many({"text": text})
+        print(success)
+
 
 if __name__ == "__main__":
     # test local mongo db establishment
     word = [
         {
-            "text": "Lambda",
+            "text": "Test2",
             "documents":
                 {
                     "5da65f292f67f000015296c": {
@@ -174,3 +233,30 @@ if __name__ == "__main__":
 
     for result in results:
         pprint.pprint(result)
+
+    print("------------------------try aggregate------------------------")
+    results = dataLayer.aggregation("Lambda")
+    for result in results:
+        pprint.pprint(result)
+
+    print("------------------------try map reduce------------------------")
+    # results = \
+    dataLayer.adv_aggregation()
+    # for result in results.find():
+    #     pprint.pprint(result)
+
+    print("a new collection.........")
+    client = MongoClient(HOST, PORT)
+    collection = client[DATABASE]["my_results"]
+    for result in collection.find():
+        pprint.pprint(result)
+
+    print("------------------------try adv map reduce------------------------")
+    count = client[DATABASE]["my_results2"].count_documents({"_id": "Lambda"})
+    print("there are {} doc with of text: Lambda in result2".format(count))
+    dataLayer.adv_aggregation2()
+
+    client = MongoClient(HOST, PORT)
+    collection = client[DATABASE]["my_results2"]
+    result = collection.find_one({"_id": "Test2"})
+    pprint.pprint(result)
