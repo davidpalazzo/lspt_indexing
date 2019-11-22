@@ -260,3 +260,45 @@ if __name__ == "__main__":
     collection = client[DATABASE]["my_results2"]
     result = collection.find_one({"_id": "Test2"})
     pprint.pprint(result)
+
+
+    '''
+    New Design for Concurrent operation:
+    Apply incremental map-reduce mechanism for updating collection 1 to collection 2
+    Incremental apply time stamp for storing the update
+    
+    Collection 1:
+    {
+        "text": "my_word",
+        "ts": "20190817xxxx"
+        "document":
+            {
+                "documentId": 5da65f292f67f000015296c,
+                "tf": 0.308,
+                "idf": 2.996,
+                "occurrences": [1, 4, 10, 13]
+            }
+    }
+    
+    Collection 2:
+    {
+        "text": "my_word",
+        "ts": "ts",
+        "documents":
+            [
+                {
+                    "documentId": 5da65f292f67f000015296c,
+                    "tf": 0.308,
+                    "idf": 2.996,
+                    "occurrences": [1, 4, 10, 13]
+                },
+                
+                {
+                    "documentId": 2kn3sdf0012nh19287560d, 
+                    "tf": 0.416,
+                    "idf": 3.0,
+                    "occurrences": [1, 4]
+                }
+            ]
+    }
+    '''
