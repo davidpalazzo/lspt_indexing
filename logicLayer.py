@@ -34,21 +34,6 @@ def getDocsInOrder(words):
 	#...
 	pass
 
-#where words is a list of words	
-#returns list of documents
-def getDocumentsWithTrigram(words):
-	pass
-
-#where words is a list of words	
-#returns list of documents
-def getDocumentsWithBigram(words):
-	pass
-
-#where words is a list of words	
-#returns list of documents
-def getDocumentsWithWord(words):
-	pass
-
 #length is the length of the ngram desired, length(words)
 #returns list of documents
 def getDocumentsWithNgram(words,length):
