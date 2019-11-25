@@ -1,46 +1,18 @@
-// const keys = require("config.js"); for secret keys if needed later
-const mongoose = require("mongoose");
-const express = require("express");
-const bodyParser = require("body-parser");
-
-const PORT = process.env.PORT || 5000;
-const app = express();
-let Word = require('./model.word');   // import models used to store information
-//do we need a Document model?
- 
-//using mongo client
-const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://LSPIndexing:LSPIndexing@largescaleindexing-lsdil.mongodb.net/test?retryWrites=true&w=majority";
-const client = new MongoClient(uri, { useNewUrlParser: true });
-var collection;
-client.connect(err => {
-  collection = client.db("LargeScaleIndex").collection("index");
- // perform actions on the collection object
-
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-// enable cors
-// const cors = require('cors');
-// app.use(cors());
-
-/*
-test route to check for connection
-*/
-app.get('/',function(req,res){
-    res.status(200).send({'hello':"world"});
-})
-/*POST (/’relevantDocs) FROM RANKING
+AS OF 11/18, 11:01AM
+POST (/’relevantDocs)
+bSummary: Use this route to get a list of documents and scores for each n-gram provided.
+Workflow: Ranking will receive a query request from the user and request relevant documents from us after breaking the query into multiple n-grams.
+From: Ranking
+ERR handling: if the list of n-grams is null or non-existing, we will assume it is an error and do no work.
 BODY:
 [“NGRAM1”,”NGRAM2”,...]
 RESPONSE:
 {
    “NGRAM1”:
-    [
+    {
        “Documentid1”:{documentData},
        “Documentid1”: {documentData},...
-    ],
+    },
     “NGRAM2”:...
 }
 Where documentData is of form: 
@@ -49,20 +21,31 @@ Where documentData is of form:
    "idf" : INT,
    "tf-idf" : INT
  }
- */
-app.post('/relevantDocs', function(req,res){
-	console.log("body received:", req.body)
-	res.status(200).send({"relevant docs post recieved"})
-})
-/*POST: ‘/update’ FROM DDS
+
+
+POST: ‘/update’ 
+Summary: Use this route to add, update, or remove a document when information pertaining to said document has changed.
+Workflow: Crawling will determine if a document is to be added, updated, or removed, and Document Data Store will give us the data for the document that has been added, that needs to be removed, or both in the case of an update.
+From: Document Data Store
+ERR handling: if documentData is null rather than non-existing, we will assume it is an error and do no work.
 BODY: 
 If only remove provided, we assume it is a remove
 If only add provided, we assume it is an add
 If both are provided, we assume it is an update
+For an update:
 {
    "add": {documentData},
    "remove" : {documentData}
  }
+For a remove:
+{
+   "remove" : {documentData}
+ }
+For an add:
+{
+   "add" : {documentData}
+ }
+
 Where document data is of form:
 {
     "Words": {
@@ -141,12 +124,5 @@ Where document data is of form:
 }
 RESPONSE:
 none
-*/
-app.post("/update", function(req,res){
-	console.log("body recieved",req.body)
-	res.status(200).send({"update post recieved"})
-})
 
 
-// launch our backend into a port
-app.listen(PORT, () => console.log(`LISTENING ON PORT ${PORT}`));
