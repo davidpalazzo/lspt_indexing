@@ -52,7 +52,7 @@ Where documentData is of form:
  */
 app.post('/relevantDocs', function(req,res){
 	console.log("body received:", req.body)
-	res.status(200).send({"relevant docs post recieved"})
+	res.status(200).send("relevant docs post recieved")
 })
 /*POST: ‘/update’ FROM DDS
 BODY: 
@@ -144,9 +144,10 @@ none
 */
 app.post("/update", function(req,res){
 	console.log("body recieved",req.body)
-	res.status(200).send({"update post recieved"})
+	res.status(200).send("update post recieved")
 })
 
 
 // launch our backend into a port
 app.listen(PORT, () => console.log(`LISTENING ON PORT ${PORT}`));
+});
