@@ -13,7 +13,7 @@ DATABASE = "test_storage"
 COLLECTION = "test-collection-4"
 COLLECTION_MR = "test-map-reduce-4"
 
-'''
+"""
 New Design for Concurrent operation:
 Apply incremental map-reduce mechanism for updating collection 1 to collection 2
 Incremental apply time stamp for storing the update
@@ -23,22 +23,24 @@ Collection 1:
     "text": "my_word",
     "ts": "20190817xxxx"
     "documentId": 5da65f292f67f000015296c,
-    "tf": 0.308,
-    "idf": 2.996,
-    "occurrences": [1, 4, 10, 13]    
+    "document": {
+        "tf": 0.308,
+        "idf": 2.996,
+        "occurrences": [1, 4, 10, 13]   
+    } 
 }
 
 Collection 2:
 {
     "_id": "my_word",
     "value": {
-        "ts": "20190817xxxx",   # the last time update 
         "documents": {
             "5da65f292f67f000015296c":
             {
                 "tf": 0.308,
                 "idf": 2.996,
                 "occurrences": [1, 4, 10, 13]
+                "ts": "20190817xxxx",   # the last time update 
             },
 
             "2kn3sdf0012nh19287560d":
@@ -46,23 +48,24 @@ Collection 2:
                 "tf": 0.416,
                 "idf": 3.0,
                 "occurrences": [1, 4]
+                "ts": "20190817xxxx",   # the last time update 
             }
         }
     }
 }
-'''
+"""
 
 
 class DataLayer:
-    def __init__(self):
+    def __init__(self, db="indexing", collection="texts", mr_collection="text_collection"):
         client = MongoClient(HOST, PORT)
-        self.collection = client[DATABASE][COLLECTION]
-        self.mr_collection = client[DATABASE][COLLECTION_MR]
+        self.collection = client[db][collection]
+        self.mr_collection = client[db][mr_collection]
 
         success = self.collection.create_index([("text", pymongo.ASCENDING),
                                                 ("documentId", pymongo.ASCENDING)], unique=True)
-        if success:
-            print("create index on collection {} success".format(COLLECTION))
+        if not success:
+            raise DataBaseCreateFail()
 
     """
     input: example_contents = 
@@ -100,10 +103,10 @@ class DataLayer:
                 {"$set": {"ts": time.time(), "document": content["document"]}},
                 upsert=True
             )
-        dataLayer.mr_aggregation(last_update)
+        self.map_reduce_aggregation(last_update)
         return insert_ids
 
-    def mr_aggregation(self, last_update):
+    def map_reduce_aggregation(self, last_update):
         mapper = Code(
             '''
             function () {
@@ -146,7 +149,25 @@ class DataLayer:
                                           query={"ts": {"$gte": last_update}},
                                           )
 
-    def get(self, collection, queries):
+    def delete_text(self, document_id, texts):
+        for text in texts:
+            self.mr_collection.update_one(
+                {"_id": text},
+                {"$unset": {"value.documents." + document_id: ""}}
+            )
+            self.collection.delete_one({"text": text, "documentId": document_id})
+
+    def get(self, texts):
+        result_list = list()
+        for text in texts:
+            query = {"_id": text}
+            assert (self.mr_collection.count_documents(query) == 1)
+            ones = self.mr_collection.find(query)
+            for one in ones:
+                result_list.append(one)
+        return result_list
+
+    def get_ts(self, collection, queries):
         # Currently just search text one by one,
         # Later can apply find to search for multiple result
         result_list = list()
@@ -160,6 +181,11 @@ class DataLayer:
     def remove_text(self, collection, query):
         success = collection.delete_many(query)
         print(success)
+
+
+class DataBaseCreateFail(Exception):
+    def __init__(self):
+        self.message = "Fail to create or access database"
 
 
 if __name__ == "__main__":
@@ -209,17 +235,19 @@ if __name__ == "__main__":
         }
     ]
 
-    dataLayer = DataLayer()
+    dataLayer = DataLayer(DATABASE, COLLECTION, COLLECTION_MR)
     # dataLayer.remove_text(dataLayer.collection, {})
     # dataLayer.remove_text(dataLayer.mr_collection, {})
 
-    dataLayer.put(example_contents)
+    # dataLayer.put(example_contents)
 
-    results = dataLayer.get(dataLayer.collection, [{}])
+    results = dataLayer.get_ts(dataLayer.collection, [{}])
     for result in results:
         pprint.pprint(result)
 
     print("-----------------------FROM QUERY--------------------------")
-    results = dataLayer.get(dataLayer.mr_collection, [{}])
+    results = dataLayer.get_ts(dataLayer.mr_collection, [{}])
     for result in results:
         pprint.pprint(result)
+
+    dataLayer.delete_text('10010', ["Lambda"])
