@@ -1,36 +1,60 @@
 import pymongo
-from bson import timestamp
-from bson.son import SON
 from bson.code import Code
 from pymongo import MongoClient
 import time
 
-import pprint
-
 PORT = 27017
 HOST = "localhost"
-DATABASE = "test_storage"
-COLLECTION = "test-collection-4"
-COLLECTION_MR = "test-map-reduce-4"
+DATABASE = "indexing"
+COLLECTION = "texts"
+COLLECTION_MR = "texts_collection"
 
 """
-New Design for Concurrent operation:
+DataLayer provides a wrapper for accessing the collection, 
+and is designed for handling concurrent operation:
+Having two collection to store contents in order to allow atomic operation
 Apply incremental map-reduce mechanism for updating collection 1 to collection 2
 Incremental apply time stamp for storing the update
 
-Collection 1:
-{
-    "text": "my_word",
-    "ts": "20190817xxxx"
-    "documentId": 5da65f292f67f000015296c,
-    "document": {
-        "tf": 0.308,
-        "idf": 2.996,
-        "occurrences": [1, 4, 10, 13]   
-    } 
-}
+Collection 1 has unique compound key on "text" and "documentId", which means if the "text" is the same
+but with different "documentId", it still allow to store both information. When doing add, entry will be directly
+added in to the collection using the format shown as following if the compound key does not exist, otherwise,
+update will applied, and also renew the timestamp. 
+This allow atomic operation on individual entry when doing add, update, remove and etc.
 
-Collection 2:
+Collection 1 Example:
+content1 and content2 can exist in collection 1 at the same time, after done with the 'put' operation,
+map reduce would be applied to aggregate the newly inserted/updated entry into the collection 2.
+
+content1 = {
+            "text": "my_word",
+            "ts": "20190817xxxx"
+            "documentId": 5da65f292f67f000015296c,
+            "document": {
+                "tf": 0.308,
+                "idf": 2.996,
+                "occurrences": [1, 4, 10, 13]
+            } 
+        }
+
+content2 = {
+            "text": "my_word",
+            "ts": "20190817xxxx"
+            "documentId": 2kn3sdf0012nh19287560d,
+            "document": {
+                "tf": 0.416,
+                "idf": 3.0,
+                "occurrences": [1, 4]
+            } 
+        }
+
+Collection 2 is handled by map reduce, incrementally map the newly added or updated entry from collection 1,
+and do reduce to the mapped entry from collection 1 and the already existed entry from collection 2.
+Map reduce provided by mongodb should be considered as thread safe.
+
+Collection 2 Example:
+The following example shown outcome of applying map reduce on content1 and content2
+
 {
     "_id": "my_word",
     "value": {
@@ -57,18 +81,38 @@ Collection 2:
 
 
 class DataLayer:
-    def __init__(self, db="indexing", collection="texts", mr_collection="text_collection"):
-        client = MongoClient(HOST, PORT)
-        self.collection = client[db][collection]
-        self.mr_collection = client[db][mr_collection]
+    """
+    constructor for DataLayer, provide a way for user declare the database to used and
+    the name of the two collections. Check the default deceleration above
+    """
 
-        success = self.collection.create_index([("text", pymongo.ASCENDING),
-                                                ("documentId", pymongo.ASCENDING)], unique=True)
-        if not success:
+    def __init__(self, db=DATABASE, collection=COLLECTION, mr_collection=COLLECTION_MR):
+
+        try:
+            # get the client from default host and port
+            client = MongoClient(HOST, PORT)
+            # create/accessing the database collection
+            self.collection = client[db][collection]
+            # create/accessing the database collection for map reduce
+            self.mr_collection = client[db][mr_collection]
+
+            # create the unique compound index on text and documentId in decreasing order
+            success = self.collection.create_index([("text", pymongo.ASCENDING),
+                                                    ("documentId", pymongo.ASCENDING)], unique=True)
+            if not success:
+                raise DataBaseCreateFail()
+
+        except Exception:
+            # catching the potential exception and
+            # throw new exception indicating the failure on initialize stage
             raise DataBaseCreateFail()
 
     """
-    input: example_contents = 
+    put method puts a list of contents to the collection1, 
+    then applied map reduce on the newly updated entry, then stores the result to collection2.
+    contents: a list of contents. Every content has "text", "documentId", "document" as field, 
+    where "document" map to an object with "tf", "idf", "occurrences" as field
+    example_contents = 
     [
         {
             "text": "Test2",
@@ -95,8 +139,9 @@ class DataLayer:
     """
 
     def put(self, contents):
+        # get the current time, map reduce will do mapping on the entry
+        # with time latter then the current time
         last_update = time.time()
-        insert_ids = list()
         for content in contents:
             self.collection.update_one(
                 {"text": content["text"], "documentId": content["documentId"]},
@@ -104,28 +149,53 @@ class DataLayer:
                 upsert=True
             )
         self.map_reduce_aggregation(last_update)
-        return insert_ids
+        return True
+
+    """
+    map_reduce_aggregation will be called by the put when every update happen.
+    map the newly update entry in collection1 and reduce with existing entry in collection2
+    last_update specified timestamp to define the newly updated content. map reduce will
+    only be applied on the content with timestamp larger last_update.
+    the example outcome in collection2 shown at the top
+    """
 
     def map_reduce_aggregation(self, last_update):
+        # define the mapper,
+        # emit the key and value to be used in reducer
+        # the mapper should have the same form with reduced value
         mapper = Code(
             '''
             function () {
+                // key is the text, value map "documents" to the object with 
+                // documentId as key and "document" in collection1 as content
+                // also, move add timestamp into the "document" field
                 var key = this.text;
                 var value = {"documents": {}}
                 value["documents"][this.documentId] = this.document;
                 value["documents"][this.documentId]["ts"] = this.ts;
+                
+                // emit the mapped key and value
                 emit(key, value);
             }
             '''
         )
 
+        # define the reducer,
+        # the reducer should always remain the same format no matter
+        # how many times map reduce applied
         reducer = Code(
             '''
+            // receive the key and value from the mapper
             function (key, values) {
+                // define new object to receive and add the newly reduced content
                 var obj = {};
                 obj["documents"] = {};
                 
+                // merge function check the timestamp of given documentId and document
+                // replace the existing content if the timestamp is larger
                 function merge(documentId, document) {
+                    // check if the documentId is in the object
+                    // if does, replace with new content
                     if (documentId in obj["documents"] &&
                         obj["documents"][documentId]["ts"] > document["ts"]) {
                         return;
@@ -133,6 +203,7 @@ class DataLayer:
                     obj["documents"][documentId] = document;
                 }
                 
+                // loop through the value collected, and apply merge on each documentId
                 for (var i = 0; i < values.length; i ++) {
                     var value = values[i];
                     for(let documentId in value["documents"]) {
@@ -144,110 +215,76 @@ class DataLayer:
             '''
         )
 
+        # apply map reduce using the mapper and reducer, with specified newly the time stamp
         return self.collection.map_reduce(mapper, reducer,
-                                          out={"reduce": COLLECTION_MR},
+                                          out={"reduce": self.mr_collection.name},
                                           query={"ts": {"$gte": last_update}},
                                           )
 
+    """
+    delete_text delete the given document_id with a list of text.
+    document_id: the id of the document
+    texts: a list of text need to delete the entry of specified documentId
+    """
+
     def delete_text(self, document_id, texts):
+        # loop through the text, and unset the document_id
         for text in texts:
+            # delete the mr collection first
             self.mr_collection.update_one(
                 {"_id": text},
                 {"$unset": {"value.documents." + document_id: ""}}
             )
+            # then delete the collection
             self.collection.delete_one({"text": text, "documentId": document_id})
 
+    """
+    get method gets the a list of text from database, 
+    texts is a list of text, for example ["my_word", "lambda", "test"].
+    If one of the text does not exist, None value will be included
+    return value is a list of result retrieve from
+    collection2 directly with the following format:
+    [
+        {
+            "_id": "my_word",
+            "value": {
+                "documents": {
+                    "5da65f292f67f000015296c":
+                    {
+                        "tf": 0.308,
+                        "idf": 2.996,
+                        "occurrences": [1, 4, 10, 13]
+                        "ts": "20190817xxxx",
+                    },
+        
+                    "2kn3sdf0012nh19287560d":
+                    { 
+                        "tf": 0.416,
+                        "idf": 3.0,
+                        "occurrences": [1, 4]
+                        "ts": "20190817xxxx",
+                    }
+                }
+            }
+        },
+        {....},
+        None
+    ]
+    """
+
     def get(self, texts):
+        # define a result list
         result_list = list()
+        # loop through text list and do query on each text
         for text in texts:
             query = {"_id": text}
-            assert (self.mr_collection.count_documents(query) == 1)
-            ones = self.mr_collection.find(query)
-            for one in ones:
-                result_list.append(one)
+            # assert the content is unique with "_id"
+            assert (self.mr_collection.count_documents(query) <= 1)
+            one = self.mr_collection.find_one(query)
+            result_list.append(one)
         return result_list
-
-    def get_ts(self, collection, queries):
-        # Currently just search text one by one,
-        # Later can apply find to search for multiple result
-        result_list = list()
-        for query in queries:
-            print("there are {} document with {}".format(collection.count_documents(query), query))
-            ones = collection.find(query)
-            for one in ones:
-                result_list.append(one)
-        return result_list
-
-    def remove_text(self, collection, query):
-        success = collection.delete_many(query)
-        print(success)
 
 
 class DataBaseCreateFail(Exception):
     def __init__(self):
         self.message = "Fail to create or access database"
-
-
-if __name__ == "__main__":
-    example_contents = [
-        {
-            "text": "Lambda",
-            "documentId": "5da65f292f67f000015296c",
-            "document":
-                {
-                    "tf": 0.301,
-                    "idf": 3.912,
-                    "occurrences": [12, 17, 20]
-                }
-        },
-
-        {
-            "text": "Lambda",
-            "documentId": "2kn3sdf0012nh19287560d",
-            "document":
-                {
-                    "tf": 0.416,
-                    "idf": 3.0,
-                    "occurrences": [1, 4, 5]
-                }
-        },
-
-        {
-            "text": "MyTest",
-            "documentId": "good good study day day up",
-            "document":
-                {
-                    "tf": 0.416,
-                    "idf": 3.0,
-                    "occurrences": [9, 99, 999]
-                }
-        },
-
-        {
-            "text": "Lambda",
-            "documentId": "10010",
-            "document":
-                {
-                    "tf": 0.301,
-                    "idf": 3.912,
-                    "occurrences": [12, 17, 20]
-                }
-        }
-    ]
-
-    dataLayer = DataLayer(DATABASE, COLLECTION, COLLECTION_MR)
-    # dataLayer.remove_text(dataLayer.collection, {})
-    # dataLayer.remove_text(dataLayer.mr_collection, {})
-
-    # dataLayer.put(example_contents)
-
-    results = dataLayer.get_ts(dataLayer.collection, [{}])
-    for result in results:
-        pprint.pprint(result)
-
-    print("-----------------------FROM QUERY--------------------------")
-    results = dataLayer.get_ts(dataLayer.mr_collection, [{}])
-    for result in results:
-        pprint.pprint(result)
-
-    dataLayer.delete_text('10010', ["Lambda"])

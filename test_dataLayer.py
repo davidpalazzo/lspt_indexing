@@ -1,8 +1,5 @@
-import pprint
-
 import pytest
 from pymongo import MongoClient
-
 from dataLayer import DataLayer, DataBaseCreateFail
 
 PORT = 27017
