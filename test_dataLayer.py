@@ -250,9 +250,3 @@ def clear_up():
     assert mr_collection.count_documents({}) == 0
     collection.drop()
     mr_collection.drop()
-
-
-if __name__ == "__main__":
-    test_get()
-    test_put()
-    test_delete()
