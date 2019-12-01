@@ -1,52 +1,5 @@
 import pprint
-
 from dataLayer import DataLayer
-
-DATA = {
-    "content1": {
-        "text": "Lambda",
-        "documentId": "1",
-        "document":
-            {
-                "tf": 1,
-                "idf": 2,
-                "occurrences": [12, 17, 20]
-            }
-    },
-
-    "content2": {
-        "text": "Lambda",
-        "documentId": "2",
-        "document":
-            {
-                "tf": 3,
-                "idf": 4,
-                "occurrences": [1, 4, 5]
-            }
-    },
-
-    "content3": {
-        "text": "Lambda",
-        "documentId": "2",
-        "document":
-            {
-                "tf": 3,
-                "idf": 4,
-                "occurrences": [1, 4]
-            }
-    },
-
-    "content4": {
-        "text": "Test",
-        "documentId": "2",
-        "document":
-            {
-                "tf": 100,
-                "idf": 200,
-                "occurrences": [100]
-            }
-    }
-}
 
 
 def put_example(data_layer):
