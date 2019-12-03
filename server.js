@@ -7,16 +7,6 @@ const PORT = process.env.PORT || 5000;
 const app = express();
 let Word = require('./model.word');   // import models used to store information
 //do we need a Document model?
- 
-//using mongo client
-const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://LSPIndexing:LSPIndexing@largescaleindexing-lsdil.mongodb.net/test?retryWrites=true&w=majority";
-const client = new MongoClient(uri, { useNewUrlParser: true });
-var collection;
-client.connect(err => {
-  collection = client.db("LargeScaleIndex").collection("index");
- // perform actions on the collection object
-
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -150,4 +140,3 @@ app.post("/update", function(req,res){
 
 // launch our backend into a port
 app.listen(PORT, () => console.log(`LISTENING ON PORT ${PORT}`));
-});
