@@ -1,6 +1,7 @@
+import sys
+sys.path.append("..")
 import pprint
 from dataLayer import DataLayer
-
 
 def put_example(data_layer):
     data_layer.put(
