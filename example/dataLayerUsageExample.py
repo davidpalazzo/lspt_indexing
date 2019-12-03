@@ -1,3 +1,5 @@
+import sys
+sys.path.append("..")
 import pprint
 from dataLayer import DataLayer
 
