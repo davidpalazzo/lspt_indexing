@@ -42,7 +42,11 @@ Where documentData is of form:
  */
 app.post('/relevantDocs', function(req,res){
 	console.log("body received:", req.body)
-	res.status(200).send("relevant docs post recieved")
+	docs = logicLayer.getDocs(ngram)
+	// return docs
+	// res.status(200).send("relevant docs post recieved")
+	res.status(200).send(docs)
+
 })
 /*POST: ‘/update’ FROM DDS
 BODY: 
@@ -134,6 +138,13 @@ none
 */
 app.post("/update", function(req,res){
 	console.log("body recieved",req.body)
+	if (req.body.remove){
+		logicLayer.remove(req.body.remove)
+	}
+	//then
+	if(req.body.add){
+		logicLayer.add(req.body.add)
+	}
 	res.status(200).send("update post recieved")
 })
 
