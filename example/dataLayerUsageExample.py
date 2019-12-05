@@ -63,6 +63,10 @@ if __name__ == "__main__":
     dataLayer = DataLayer()
 
     put_example(dataLayer)
+    print("=================DEBUG_MODE: print collection ==================")
+    dataLayer.debug_print_collection()
+    print("=================DEBUG_MODE: print mr collection ==================")
+    dataLayer.debug_print_mr_collection()
     print("=================Applied put example============================")
     get_example(dataLayer)
     print("=================Applied delete example============================")

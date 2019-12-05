@@ -2,6 +2,7 @@ import pymongo
 from bson.code import Code
 from pymongo import MongoClient
 import time
+import pprint
 
 PORT = 27017
 HOST = "localhost"
@@ -103,37 +104,37 @@ class DataLayer:
             # throw new exception indicating the failure on initialize stage
             raise DataBaseCreateFail()
 
-    """
-    put method puts a list of contents to the collection1, 
-    then applied map reduce on the newly updated entry, then stores the result to collection2.
-    contents: a list of contents. Every content has "text", "documentId", "document" as field, 
-    where "document" map to an object with "tf", "occurrences" as field.
-    exception will through 
-    example_contents = 
-    [
-        {
-            "text": "Test2",
-            "documentId": "5da65f292f67f000015296c",
-            "document": 
-            {
-                "tf": 0.301,
-                "occurrences": [1, 100]
-            }
-        },
-
-        {
-             "text": "Lambda",
-             "documentId": "2kn3sdf0012nh19287560d",
-             "document": 
-             {
-                "tf": 0.416,
-                "occurrences": [1, 4]
-             }
-        }
-    ]
-    """
-
     def put(self, contents):
+        """
+        put method puts a list of contents to the collection1,
+        then applied map reduce on the newly updated entry, then stores the result to collection2.
+        exception will through
+        example_contents =
+        [
+            {
+                "text": "Test2",
+                "documentId": "5da65f292f67f000015296c",
+                "document":
+                {
+                    "tf": 0.301,
+                    "occurrences": [1, 100]
+                }
+            },
+
+            {
+                 "text": "Lambda",
+                 "documentId": "2kn3sdf0012nh19287560d",
+                 "document":
+                 {
+                    "tf": 0.416,
+                    "occurrences": [1, 4]
+                 }
+            }
+        ]
+        :param contents: a list of contents. Every content has "text", "documentId", "document" as field,
+        where "document" map to an object with "tf", "occurrences" as field.
+        :return: True if all insert success, if one fail, raise DataBasePutFail Exception
+        """
         try:
             # get the current time, map reduce will do mapping on the entry
             # with time latter then the current time
@@ -158,15 +159,15 @@ class DataLayer:
         except Exception:
             raise DataBasePutFail()
 
-    """
-    map_reduce_aggregation will be called by the put when every update happen.
-    map the newly update entry in collection1 and reduce with existing entry in collection2
-    last_update specified timestamp to define the newly updated content. map reduce will
-    only be applied on the content with timestamp larger last_update.
-    the example outcome in collection2 shown at the top
-    """
-
     def map_reduce_aggregation(self, last_update):
+        """
+        map_reduce_aggregation will be called by the put when every update happen.
+        map the newly update entry in collection1 and reduce with existing entry in collection2
+        the example outcome in collection2 shown at the top
+        :param last_update: specified timestamp to define the newly updated content. map reduce will
+        only be applied on the content with timestamp larger last_update.
+        :return: the result of map reduce, if fail, throw DataBaseAggregationFail which extends DataBasePutFail Exception
+        """
         try:
             # define the mapper,
             # emit the key and value to be used in reducer
@@ -231,13 +232,13 @@ class DataLayer:
         except Exception:
             raise DataBaseAggregationFail()
 
-    """
-    delete_text delete the given document_id with a list of text.
-    document_id: the id of the document
-    texts: a list of text need to delete the entry of specified documentId
-    """
-
     def delete_text(self, document_id, texts):
+        """
+        delete_text delete the given document_id with a list of text.
+        :param document_id: the id of the document
+        :param texts: a list of text need to delete the entry of specified documentId
+        :return: none. if exception happen, throw DataBaseDeleteFail
+        """
         try:
             # loop through the text, and unset the document_id
             for text in texts:
@@ -251,41 +252,41 @@ class DataLayer:
         except Exception:
             raise DataBaseDeleteFail()
 
-    """
-    get method gets the a list of text from database, 
-    texts is a list of text, for example ["my_word", "lambda", "test"].
-    If one of the text does not exist, None value will be included
-    return value is a list of result retrieve from
-    collection2 directly with the following format:
-    [
-        {
-            "_id": "my_word",
-            "value": {
-                "documents": {
-                    "5da65f292f67f000015296c":
-                    {
-                        "tf": 0.308,
-                        "idf": 2.996,
-                        "occurrences": [1, 4, 10, 13]
-                        "ts": "20190817xxxx",
-                    },
-        
-                    "2kn3sdf0012nh19287560d":
-                    { 
-                        "tf": 0.416,
-                        "idf": 3.0,
-                        "occurrences": [1, 4]
-                        "ts": "20190817xxxx",
+    def get(self, texts):
+        """
+        get method gets the a list of text from database,
+        If one of the text does not exist, None value will be included
+        return value is a list of result retrieve from
+        collection2 directly with the following format:
+        [
+            {
+                "_id": "my_word",
+                "value": {
+                    "documents": {
+                        "5da65f292f67f000015296c":
+                        {
+                            "tf": 0.308,
+                            "idf": 2.996,
+                            "occurrences": [1, 4, 10, 13]
+                            "ts": "20190817xxxx",
+                        },
+
+                        "2kn3sdf0012nh19287560d":
+                        {
+                            "tf": 0.416,
+                            "idf": 3.0,
+                            "occurrences": [1, 4]
+                            "ts": "20190817xxxx",
+                        }
                     }
                 }
-            }
-        },
-        {....},
-        None
-    ]
-    """
-
-    def get(self, texts):
+            },
+            {....},
+            None
+        ]
+        :param texts: is a list of text, for example ["my_word", "lambda", "test"].
+        :return: a list of result, if text does not exist, None value will be included
+        """
         try:
             # define a result list
             result_list = list()
@@ -299,6 +300,20 @@ class DataLayer:
             return result_list
         except Exception:
             raise DataBaseCreateFail()
+
+    def debug_print_collection(self):
+        """
+        print all the collection for debug only
+        """
+        for result in self.collection.find({}):
+            pprint.pprint(result)
+
+    def debug_print_mr_collection(self):
+        """
+        print all the mr collection for debug only
+        """
+        for result in self.mr_collection.find({}):
+            pprint.pprint(result)
 
 
 """
@@ -320,6 +335,7 @@ class DataBaseException(Exception):
     User is able to use except DataBaseException to catch all
     types of database exception
     """
+
     def __init__(self):
         self.message = "Fail operate on database"
 
@@ -330,6 +346,7 @@ class DataBaseCreateFail(DataBaseException):
     would be throw when creation of database fail.
     This caused by not running of mongodb or other specified by mongodb
     """
+
     def __init__(self):
         self.message = "Fail to create or access database"
 
@@ -339,6 +356,7 @@ class DataBaseGetFail(DataBaseException):
     DataBaseGetFail extends DataBaseException
     would be throw when get request fail
     """
+
     def __init__(self):
         self.message = "Fail to do get request to database"
 
@@ -348,6 +366,7 @@ class DataBaseDeleteFail(DataBaseException):
     DataBaseDeleteFail extends DataBaseException
     would be throw when delete request fail
     """
+
     def __init__(self):
         self.message = "Fail to do delete request to database"
 
@@ -357,6 +376,7 @@ class DataBasePutFail(DataBaseException):
     DataBasePutFail extends DataBaseException
     would be throw when put request fail
     """
+
     def __init__(self):
         self.message = "Fail to do put request to database"
 
@@ -366,5 +386,6 @@ class DataBaseAggregationFail(DataBasePutFail):
     DataBaseAggregationFail is extend DataBasePutFail
     would be throw when map reduce fail
     """
+
     def __init__(self):
         self.message = "Fail to aggregate data in database"

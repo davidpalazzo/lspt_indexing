@@ -51,7 +51,12 @@ DATA = {
 
 
 class Queries:
+    """
+    Queries wrap the query and the expected content
+    """
+
     def __init__(self, contents):
+        # queries for eliminate duplicate
         queries = set()
         self.expected_list = list()
         for content in contents:
@@ -59,19 +64,31 @@ class Queries:
             self.expected_list.append(content)
         self.queries = list(queries)
 
+    # get the queries list
     def get_queries_list(self):
         return self.queries
 
+    # get the expected list
     def get_expected_list(self):
         return self.expected_list
 
 
 class Critical_data:
+    """
+    Critical_data used to extract and store the important things
+    such as text, document id, tf, and occurrence of a request
+    """
+
     def __init__(self, text, doc_id, tf, occurrence):
         self.text = text
         self.doc_id = doc_id
         self.tf = tf
         self.occurrence = occurrence
+
+    """
+    is_equal 
+    check if the current data match another criticle data
+    """
 
     def is_equal(self, critical_data):
         return self.text == critical_data.text and \
@@ -80,6 +97,10 @@ class Critical_data:
                self.occurrence == critical_data.occurrence
 
     def to_string(self):
+        """
+        to_string format the current content to string,
+        for simplify testing
+        """
         return "text: " + self.text + \
                "\ndoc_id: " + self.doc_id + \
                "\ntf: " + str(self.tf) + \
@@ -87,6 +108,11 @@ class Critical_data:
 
 
 def extract_data_from_collection(contents):
+    """
+    extract the data from collection to form critical data
+    :param contents:
+    :return: result list of Critical_data
+    """
     results = list()
     for content in contents:
         data = Critical_data(content["text"],
@@ -98,6 +124,10 @@ def extract_data_from_collection(contents):
 
 
 def extract_data_from_mr_collection(contents):
+    """
+    :param contents: content list from map reduce collection
+    :return: result list of Critical_data
+    """
     results = list()
     for content in contents:
         text = content["_id"]
@@ -112,10 +142,18 @@ def extract_data_from_mr_collection(contents):
 
 
 def get_db_instance():
+    """
+    get the database instance from test collections
+    :return:
+    """
     return DataLayer(TEST_DB, TEST_COLLECTION, TEST_COLLECTION_MR)
 
 
 def get_db_accessor():
+    """
+    get_db_accessor from raw creation
+    :return: the collection accessors
+    """
     # accessing the collection through host and port
     client = MongoClient(HOST, PORT)
     # retrieve the collection from data base
@@ -125,6 +163,12 @@ def get_db_accessor():
 
 
 def is_in(result, expected_list):
+    """
+    check if the result is in the expected list
+    :param result:
+    :param expected_list:
+    :return:
+    """
     for expected in expected_list:
         if result.is_equal(expected):
             return True
