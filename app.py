@@ -13,7 +13,7 @@ def helloWorld():
 @app.route('/relevantDocs', methods=['POST'])
 def relevantDocs():
     print("received:", request)
-
+    
     if request.method == 'POST':      
         jsonData = request.get_json()
         print("ngrams recieved: ",jsonData)
@@ -26,11 +26,11 @@ def update():
     if request.method == 'POST':
         jsonData = request.get_json()
         print("update recieved: ",jsonData)
-        if jsonData['remove']:
+        if jsonData.get('remove'):
             print(jsonData['remove'])
             LogicLayer.removeDoc(jsonData['remove'])
         # #then
-        if jsonData['add']:
+        if jsonData.get('add'):
             print(jsonData['add'])
             LogicLayer.addDoc(jsonData['add'])
         return "update post recieved"
