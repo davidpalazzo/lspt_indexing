@@ -30,7 +30,7 @@ class LogicLayer:
 		for word in documentData["Words"]["Wordcounts"]:
 			#calculate tf and idf
 			tf = double(word["Count"]) / double(documentData["Words"]["NumWords"])
-			numDocs = len(getDocs([word["Text"])])[0]) + 1
+			numDocs = len(getDocs([word["Text"]])[0]) + 1
 			idf = np.log(totalDocs / numDocs)
 			#add word to list in proper format
 			words.append({
