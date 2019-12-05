@@ -7,11 +7,16 @@ write test cases in test.py
 ###How to use server.js (api) locally
 1. you need node
 2. make sure you have no other node processess running on port 5000
-	- to kill all node processes:  pkill nodejs or pkill node
-3. run node server.js
+	- to kill all node processes:  `pkill nodejs` or `pkill node`
+3. run `node server.js`
+
+###How to use app.py(instead of server.js)
+1. you need pip3, flask, python3
+2. run`export FLASK_APP=app.py`
+3. run `flask run`
 
 ###How to ssh for mac/linux
-1. write ```ssh your_username@lspt-index1.cs.rpi.edu```
+1. write `ssh your_username@lspt-index1.cs.rpi.edu`
 2. you will be prompted to put in a password. it was given in an email with subject: csci4460
 
 ###How to connect for windows

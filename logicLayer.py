@@ -1,40 +1,28 @@
-# where data is of form:
-# {
-#     "Text": "Lambda",
-#     "Count": 5,
-#     "Occurences": [
-#         1,
-#         4,
-#         10,
-#         13,
-#         400,
-#         590
-#     ]
-# }
-def addDocument(data):
-	pass
+from dataLayer import DataLayer
+dl = DataLayer()
 
-#where words is a list of words	
-#returns list of documents
-def getIntersectingDocs(words):
-	let intersectDocs = logicLayer.getDocumentsWithWord(words[0]);
-    for i in range(length(words)):
-    	if length(intersectDocs)>0:
-        # //finds docs that have words[i] in it and 
-        # //intersects the resulting docs with the original set of docs
-        var docsForWord = getDocumentsWithWord(words[i])
-        intersectDocs = intersectDocs.filter(value => docsForWord.includes(value))
+#TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document).
+# IDF(t) = log_e(Total number of documents / Number of documents with term t in it).
 
-#where words is a list of words	
-#returns list of documents
-def getDocsInOrder(words):
-	#use getIntersectingDocs?
-	#or use the locations of words by finding first occurrence, x of word0 in intersected doc0
-	#then find the location after x in doc0 for word1
-	#...
-	pass
+class LogicLayer:
 
-#length is the length of the ngram desired, length(words)
-#returns list of documents
-def getDocumentsWithNgram(words,length):
-	pass
+	def getDocs(list_of_ngrams):
+		
+		documentList = dl.get(list_of_ngrams)
+		return documentList
+		# for each document in documentList
+			#attach scores (tf and idf) to document
+
+	def removeDoc(documentData):
+		pass
+		# for each word in document data
+			#remove document from documentList
+			#update idf score for the word
+
+	def addDoc(documentData):
+		pass
+
+		# for each word in document data
+			#add document from documentList
+			#calculate tf
+			#update idf score for the word
