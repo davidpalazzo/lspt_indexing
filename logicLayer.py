@@ -12,7 +12,8 @@ class LogicLayer:
 		#calculate tf and idf
 		tf = double(word["Count"]) / double(documentData["Words"]["NumWords"])
 		numDocs = len(getDocs([word["Text"]])[0]) + 1
-		idf = np.log(totalDocs / numDocs)
+		idf = np.log(10 / numDocs)
+                #TODO 10 is totalDocs hardcoded till we get that from dds
 		#add word to list in proper format
 		return {
 			"text": word["Text"],
