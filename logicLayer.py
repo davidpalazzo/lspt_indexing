@@ -2,17 +2,18 @@ from dataLayer import DataLayer
 import numpy as np
 dl = DataLayer()
 
+#temporary initialization, should be replaced by acutal functionality
+totalDocs = 1000000
+
 #TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document).
 # IDF(t) = log_e(Total number of documents / Number of documents with term t in it).
 
 class LogicLayer:
 	
 	#converts input to output format for adding word
-	def changeFormat(documentData,word):
-		#calculate tf and idf
+	def changeFormatAdd(documentData,word):
+		#calculate tf
 		tf = double(word["Count"]) / double(documentData["Words"]["NumWords"])
-		numDocs = len(getDocs([word["Text"]])[0]) + 1
-		idf = np.log(totalDocs / numDocs)
 		#add word to list in proper format
 		return {
 			"text": word["Text"],
@@ -20,13 +21,16 @@ class LogicLayer:
 			"document":
 			{
 				"tf": tf,
-				"idf": idf,
 				"occurrences": word["Occurences"]
 			}
 		}
 
 	def getDocs(list_of_ngrams):
-
+		##calculate idf
+		#numDocs = len()
+		#idf = np.log(totalDocs / numDocs)
+		##add idf to output
+		
 		documentList = dl.get(list_of_ngrams)
 		return documentList
 		# for each document in documentList
@@ -46,11 +50,11 @@ class LogicLayer:
 	def addDoc(documentData):
 		words = []
 		for word in documentData["Words"]["WordCounts"]:
-			words.append(changeFormat(documentData,word))
+			words.append(changeFormatAdd(documentData,word))
 		for bigram in documentData["NGrams"]["BiGrams"]:
-			words.append(changeFormat(documentData,bigram))
+			words.append(changeFormatAdd(documentData,bigram))
 		for trigram in documentData["NGrams"]["TriGrams"]:
-			words.append(changeFormat(documentData,trigram))
+			words.append(changeFormatAdd(documentData,trigram))
 		return dl.put(words)
 
 		# for each word in document data
