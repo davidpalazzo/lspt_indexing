@@ -1,7 +1,9 @@
 import sys
+
 sys.path.append("..")
 import pprint
 from dataLayer import DataLayer
+
 
 def put_example(data_layer):
     data_layer.put(
@@ -12,7 +14,6 @@ def put_example(data_layer):
                 "document":
                     {
                         "tf": 1,
-                        "idf": 2,
                         "occurrences": [12, 17, 20]
                     }
             },
@@ -23,7 +24,6 @@ def put_example(data_layer):
                 "document":
                     {
                         "tf": 3,
-                        "idf": 4,
                         "occurrences": [1, 4, 5]
                     }
             },
@@ -33,7 +33,6 @@ def put_example(data_layer):
                 "document":
                     {
                         "tf": 100,
-                        "idf": 200,
                         "occurrences": [100]
                     }
             }

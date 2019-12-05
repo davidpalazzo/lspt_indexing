@@ -32,7 +32,6 @@ content1 = {
             "documentId": 5da65f292f67f000015296c,
             "document": {
                 "tf": 0.308,
-                "idf": 2.996,
                 "occurrences": [1, 4, 10, 13]
             } 
         }
@@ -43,7 +42,6 @@ content2 = {
             "documentId": 2kn3sdf0012nh19287560d,
             "document": {
                 "tf": 0.416,
-                "idf": 3.0,
                 "occurrences": [1, 4]
             } 
         }
@@ -62,7 +60,6 @@ The following example shown outcome of applying map reduce on content1 and conte
             "5da65f292f67f000015296c":
             {
                 "tf": 0.308,
-                "idf": 2.996,
                 "occurrences": [1, 4, 10, 13]
                 "ts": "20190817xxxx",   # the last time update 
             },
@@ -70,7 +67,6 @@ The following example shown outcome of applying map reduce on content1 and conte
             "2kn3sdf0012nh19287560d":
             { 
                 "tf": 0.416,
-                "idf": 3.0,
                 "occurrences": [1, 4]
                 "ts": "20190817xxxx",   # the last time update 
             }
@@ -111,7 +107,8 @@ class DataLayer:
     put method puts a list of contents to the collection1, 
     then applied map reduce on the newly updated entry, then stores the result to collection2.
     contents: a list of contents. Every content has "text", "documentId", "document" as field, 
-    where "document" map to an object with "tf", "idf", "occurrences" as field
+    where "document" map to an object with "tf", "occurrences" as field.
+    exception will through 
     example_contents = 
     [
         {
@@ -120,7 +117,6 @@ class DataLayer:
             "document": 
             {
                 "tf": 0.301,
-                "idf": 3.912,
                 "occurrences": [1, 100]
             }
         },
@@ -131,7 +127,6 @@ class DataLayer:
              "document": 
              {
                 "tf": 0.416,
-                "idf": 3.0,
                 "occurrences": [1, 4]
              }
         }
@@ -139,17 +134,29 @@ class DataLayer:
     """
 
     def put(self, contents):
-        # get the current time, map reduce will do mapping on the entry
-        # with time latter then the current time
-        last_update = time.time()
-        for content in contents:
-            self.collection.update_one(
-                {"text": content["text"], "documentId": content["documentId"]},
-                {"$set": {"ts": time.time(), "document": content["document"]}},
-                upsert=True
-            )
-        self.map_reduce_aggregation(last_update)
-        return True
+        try:
+            # get the current time, map reduce will do mapping on the entry
+            # with time latter then the current time
+            last_update = time.time()
+            for content in contents:
+                # check if the content matches the require format
+                if "text" not in content or \
+                        "documentId" not in content or \
+                        "document" not in content or \
+                        "tf" not in content["document"] or \
+                        "occurrences" not in content["document"]:
+                    raise DataBasePutFail()
+
+                # update the content to collection
+                self.collection.update_one(
+                    {"text": content["text"], "documentId": content["documentId"]},
+                    {"$set": {"ts": time.time(), "document": content["document"]}},
+                    upsert=True
+                )
+            self.map_reduce_aggregation(last_update)
+            return True
+        except Exception:
+            raise DataBasePutFail()
 
     """
     map_reduce_aggregation will be called by the put when every update happen.
@@ -160,66 +167,69 @@ class DataLayer:
     """
 
     def map_reduce_aggregation(self, last_update):
-        # define the mapper,
-        # emit the key and value to be used in reducer
-        # the mapper should have the same form with reduced value
-        mapper = Code(
-            '''
-            function () {
-                // key is the text, value map "documents" to the object with 
-                // documentId as key and "document" in collection1 as content
-                // also, move add timestamp into the "document" field
-                var key = this.text;
-                var value = {"documents": {}}
-                value["documents"][this.documentId] = this.document;
-                value["documents"][this.documentId]["ts"] = this.ts;
-                
-                // emit the mapped key and value
-                emit(key, value);
-            }
-            '''
-        )
-
-        # define the reducer,
-        # the reducer should always remain the same format no matter
-        # how many times map reduce applied
-        reducer = Code(
-            '''
-            // receive the key and value from the mapper
-            function (key, values) {
-                // define new object to receive and add the newly reduced content
-                var obj = {};
-                obj["documents"] = {};
-                
-                // merge function check the timestamp of given documentId and document
-                // replace the existing content if the timestamp is larger
-                function merge(documentId, document) {
-                    // check if the documentId is in the object
-                    // if does, replace with new content
-                    if (documentId in obj["documents"] &&
-                        obj["documents"][documentId]["ts"] > document["ts"]) {
-                        return;
-                    }
-                    obj["documents"][documentId] = document;
+        try:
+            # define the mapper,
+            # emit the key and value to be used in reducer
+            # the mapper should have the same form with reduced value
+            mapper = Code(
+                '''
+                function () {
+                    // key is the text, value map "documents" to the object with 
+                    // documentId as key and "document" in collection1 as content
+                    // also, move add timestamp into the "document" field
+                    var key = this.text;
+                    var value = {"documents": {}}
+                    value["documents"][this.documentId] = this.document;
+                    value["documents"][this.documentId]["ts"] = this.ts;
+                    
+                    // emit the mapped key and value
+                    emit(key, value);
                 }
-                
-                // loop through the value collected, and apply merge on each documentId
-                for (var i = 0; i < values.length; i ++) {
-                    var value = values[i];
-                    for(let documentId in value["documents"]) {
-                        merge(documentId, value["documents"][documentId])
-                    }
-                }
-                return obj;
-            }
-            '''
-        )
+                '''
+            )
 
-        # apply map reduce using the mapper and reducer, with specified newly the time stamp
-        return self.collection.map_reduce(mapper, reducer,
-                                          out={"reduce": self.mr_collection.name},
-                                          query={"ts": {"$gte": last_update}},
-                                          )
+            # define the reducer,
+            # the reducer should always remain the same format no matter
+            # how many times map reduce applied
+            reducer = Code(
+                '''
+                // receive the key and value from the mapper
+                function (key, values) {
+                    // define new object to receive and add the newly reduced content
+                    var obj = {};
+                    obj["documents"] = {};
+                    
+                    // merge function check the timestamp of given documentId and document
+                    // replace the existing content if the timestamp is larger
+                    function merge(documentId, document) {
+                        // check if the documentId is in the object
+                        // if does, replace with new content
+                        if (documentId in obj["documents"] &&
+                            obj["documents"][documentId]["ts"] > document["ts"]) {
+                            return;
+                        }
+                        obj["documents"][documentId] = document;
+                    }
+                    
+                    // loop through the value collected, and apply merge on each documentId
+                    for (var i = 0; i < values.length; i ++) {
+                        var value = values[i];
+                        for(let documentId in value["documents"]) {
+                            merge(documentId, value["documents"][documentId])
+                        }
+                    }
+                    return obj;
+                }
+                '''
+            )
+
+            # apply map reduce using the mapper and reducer, with specified newly the time stamp
+            return self.collection.map_reduce(mapper, reducer,
+                                              out={"reduce": self.mr_collection.name},
+                                              query={"ts": {"$gte": last_update}},
+                                              )
+        except Exception:
+            raise DataBaseAggregationFail()
 
     """
     delete_text delete the given document_id with a list of text.
@@ -228,15 +238,18 @@ class DataLayer:
     """
 
     def delete_text(self, document_id, texts):
-        # loop through the text, and unset the document_id
-        for text in texts:
-            # delete the mr collection first
-            self.mr_collection.update_one(
-                {"_id": text},
-                {"$unset": {"value.documents." + document_id: ""}}
-            )
-            # then delete the collection
-            self.collection.delete_one({"text": text, "documentId": document_id})
+        try:
+            # loop through the text, and unset the document_id
+            for text in texts:
+                # delete the mr collection first
+                self.mr_collection.update_one(
+                    {"_id": text},
+                    {"$unset": {"value.documents." + document_id: ""}}
+                )
+                # then delete the collection
+                self.collection.delete_one({"text": text, "documentId": document_id})
+        except Exception:
+            raise DataBaseDeleteFail()
 
     """
     get method gets the a list of text from database, 
@@ -273,18 +286,85 @@ class DataLayer:
     """
 
     def get(self, texts):
-        # define a result list
-        result_list = list()
-        # loop through text list and do query on each text
-        for text in texts:
-            query = {"_id": text}
-            # assert the content is unique with "_id"
-            assert (self.mr_collection.count_documents(query) <= 1)
-            one = self.mr_collection.find_one(query)
-            result_list.append(one)
-        return result_list
+        try:
+            # define a result list
+            result_list = list()
+            # loop through text list and do query on each text
+            for text in texts:
+                query = {"_id": text}
+                # assert the content is unique with "_id"
+                assert (self.mr_collection.count_documents(query) <= 1)
+                one = self.mr_collection.find_one(query)
+                result_list.append(one)
+            return result_list
+        except Exception:
+            raise DataBaseCreateFail()
 
 
-class DataBaseCreateFail(Exception):
+"""
+Exception Handling Hierarchy:
+    Exception
+        |__ DataBaseException
+                    |__ DataBaseCreateFail
+                    |__ DataBaseGetFail
+                    |__ DataBaseDeleteFail
+                    |__ DataBasePutFail
+                            |__ DataBaseAggregationFail
+"""
+
+
+class DataBaseException(Exception):
+    """
+    DataBaseException is the parent
+    exception for all data layer exception.
+    User is able to use except DataBaseException to catch all
+    types of database exception
+    """
+    def __init__(self):
+        self.message = "Fail operate on database"
+
+
+class DataBaseCreateFail(DataBaseException):
+    """
+    DataBaseCreateFail extends DataBaseException
+    would be throw when creation of database fail.
+    This caused by not running of mongodb or other specified by mongodb
+    """
     def __init__(self):
         self.message = "Fail to create or access database"
+
+
+class DataBaseGetFail(DataBaseException):
+    """
+    DataBaseGetFail extends DataBaseException
+    would be throw when get request fail
+    """
+    def __init__(self):
+        self.message = "Fail to do get request to database"
+
+
+class DataBaseDeleteFail(DataBaseException):
+    """
+    DataBaseDeleteFail extends DataBaseException
+    would be throw when delete request fail
+    """
+    def __init__(self):
+        self.message = "Fail to do delete request to database"
+
+
+class DataBasePutFail(DataBaseException):
+    """
+    DataBasePutFail extends DataBaseException
+    would be throw when put request fail
+    """
+    def __init__(self):
+        self.message = "Fail to do put request to database"
+
+
+class DataBaseAggregationFail(DataBasePutFail):
+    """
+    DataBaseAggregationFail is extend DataBasePutFail
+    would be throw when map reduce fail
+    """
+    def __init__(self):
+        self.message = "Fail to aggregate data in database"

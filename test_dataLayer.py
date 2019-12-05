@@ -14,7 +14,6 @@ DATA = {
         "document":
             {
                 "tf": 1,
-                "idf": 2,
                 "occurrences": [12, 17, 20]
             }
     },
@@ -25,7 +24,6 @@ DATA = {
         "document":
             {
                 "tf": 3,
-                "idf": 4,
                 "occurrences": [1, 4, 5]
             }
     },
@@ -36,7 +34,6 @@ DATA = {
         "document":
             {
                 "tf": 3,
-                "idf": 4,
                 "occurrences": [1, 4]
             }
     },
@@ -47,7 +44,6 @@ DATA = {
         "document":
             {
                 "tf": 100,
-                "idf": 200,
                 "occurrences": [100]
             }
     }
@@ -71,25 +67,22 @@ class Queries:
 
 
 class Critical_data:
-    def __init__(self, text, doc_id, tf, idf, occurrence):
+    def __init__(self, text, doc_id, tf, occurrence):
         self.text = text
         self.doc_id = doc_id
         self.tf = tf
-        self.idf = idf
         self.occurrence = occurrence
 
     def is_equal(self, critical_data):
         return self.text == critical_data.text and \
                self.doc_id == critical_data.doc_id and \
                self.tf == critical_data.tf and \
-               self.idf == critical_data.idf and \
                self.occurrence == critical_data.occurrence
 
     def to_string(self):
         return "text: " + self.text + \
                "\ndoc_id: " + self.doc_id + \
                "\ntf: " + str(self.tf) + \
-               "\nidf: " + str(self.idf) + \
                "\noccurrences" + str(self.occurrence)
 
 
@@ -99,7 +92,6 @@ def extract_data_from_collection(contents):
         data = Critical_data(content["text"],
                              content["documentId"],
                              content["document"]["tf"],
-                             content["document"]["idf"],
                              content["document"]["occurrences"])
         results.append(data)
     return results
@@ -115,7 +107,6 @@ def extract_data_from_mr_collection(contents):
                 Critical_data(text,
                               document,
                               documents[document]["tf"],
-                              documents[document]["idf"],
                               documents[document]["occurrences"]))
     return results
 
@@ -180,6 +171,7 @@ def test_put():
 
     update_document = [DATA["content1"], DATA["content2"], DATA["content3"]]
     helper_test_put(update_document, 2, 1)
+    clear_up()
 
 
 def helper_test_get(contents, queries):
@@ -204,6 +196,7 @@ def test_get():
     contents = [DATA["content1"], DATA["content2"], DATA["content3"], DATA["content4"]]
     queries = Queries(contents)
     helper_test_get(contents, queries)
+    clear_up()
 
 
 def helper_test_delete(data_layer, document_id, text):
@@ -235,9 +228,11 @@ def test_delete():
         helper_test_delete(data_layer, "2", "Lambda")
         helper_test_delete(data_layer, "2", "Test")
         helper_test_delete(data_layer, "1", "Lambda")
+        clear_up()
 
     except DataBaseCreateFail:
         pytest.fail("Fail to create data base")
+        clear_up()
 
 
 def clear_up():
