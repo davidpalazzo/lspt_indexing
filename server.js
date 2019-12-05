@@ -33,7 +33,7 @@ RESPONSE:
     ],
     “NGRAM2”:...
 }
-Where documentData is of form: 
+Where documentData is of form:
 {
    "tf": INT,
    "idf" : INT,
@@ -49,7 +49,7 @@ app.post('/relevantDocs', function(req,res){
 
 })
 /*POST: ‘/update’ FROM DDS
-BODY: 
+BODY:
 If only remove provided, we assume it is a remove
 If only add provided, we assume it is an add
 If both are provided, we assume it is an update
@@ -59,6 +59,7 @@ If both are provided, we assume it is an update
  }
 Where document data is of form:
 {
+    "DocumentID" : 5da65f292f67f000015296c
     "Words": {
         "NumWords": 12300,
         "NumDistinctWords": 5031,
