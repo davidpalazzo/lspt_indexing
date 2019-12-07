@@ -7,16 +7,6 @@ const PORT = process.env.PORT || 5000;
 const app = express();
 let Word = require('./model.word');   // import models used to store information
 //do we need a Document model?
- 
-//using mongo client
-const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://LSPIndexing:LSPIndexing@largescaleindexing-lsdil.mongodb.net/test?retryWrites=true&w=majority";
-const client = new MongoClient(uri, { useNewUrlParser: true });
-var collection;
-client.connect(err => {
-  collection = client.db("LargeScaleIndex").collection("index");
- // perform actions on the collection object
-
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -43,7 +33,7 @@ RESPONSE:
     ],
     “NGRAM2”:...
 }
-Where documentData is of form: 
+Where documentData is of form:
 {
    "tf": INT,
    "idf" : INT,
@@ -52,10 +42,14 @@ Where documentData is of form:
  */
 app.post('/relevantDocs', function(req,res){
 	console.log("body received:", req.body)
-	res.status(200).send("relevant docs post recieved")
+	docs = logicLayer.getDocs(ngram)
+	// return docs
+	// res.status(200).send("relevant docs post recieved")
+	res.status(200).send(docs)
+
 })
 /*POST: ‘/update’ FROM DDS
-BODY: 
+BODY:
 If only remove provided, we assume it is a remove
 If only add provided, we assume it is an add
 If both are provided, we assume it is an update
@@ -65,6 +59,7 @@ If both are provided, we assume it is an update
  }
 Where document data is of form:
 {
+    "DocumentID" : 5da65f292f67f000015296c
     "Words": {
         "NumWords": 12300,
         "NumDistinctWords": 5031,
@@ -144,10 +139,16 @@ none
 */
 app.post("/update", function(req,res){
 	console.log("body recieved",req.body)
+	if (req.body.remove){
+		logicLayer.remove(req.body.remove)
+	}
+	//then
+	if(req.body.add){
+		logicLayer.add(req.body.add)
+	}
 	res.status(200).send("update post recieved")
 })
 
 
 // launch our backend into a port
 app.listen(PORT, () => console.log(`LISTENING ON PORT ${PORT}`));
-});

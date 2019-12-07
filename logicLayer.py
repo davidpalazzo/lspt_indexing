@@ -1,40 +1,60 @@
-# where data is of form:
-# {
-#     "Text": "Lambda",
-#     "Count": 5,
-#     "Occurences": [
-#         1,
-#         4,
-#         10,
-#         13,
-#         400,
-#         590
-#     ]
-# }
-def addDocument(data):
-	pass
+from dataLayer import DataLayer
+import numpy as np
+dl = DataLayer()
 
-#where words is a list of words	
-#returns list of documents
-def getIntersectingDocs(words):
-	let intersectDocs = logicLayer.getDocumentsWithWord(words[0]);
-    for i in range(length(words)):
-    	if length(intersectDocs)>0:
-        # //finds docs that have words[i] in it and 
-        # //intersects the resulting docs with the original set of docs
-        var docsForWord = getDocumentsWithWord(words[i])
-        intersectDocs = intersectDocs.filter(value => docsForWord.includes(value))
+#TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document).
+# IDF(t) = log_e(Total number of documents / Number of documents with term t in it).
 
-#where words is a list of words	
-#returns list of documents
-def getDocsInOrder(words):
-	#use getIntersectingDocs?
-	#or use the locations of words by finding first occurrence, x of word0 in intersected doc0
-	#then find the location after x in doc0 for word1
-	#...
-	pass
+class LogicLayer:
+	
+	#converts input to output format for adding word
+	def changeFormat(documentData,word):
+		#calculate tf and idf
+		tf = double(word["Count"]) / double(documentData["Words"]["NumWords"])
+		numDocs = len(getDocs([word["Text"]])[0]) + 1
+		idf = np.log(10 / numDocs)
+                #TODO 10 is totalDocs hardcoded till we get that from dds
+		#add word to list in proper format
+		return {
+			"text": word["Text"],
+			"documentId": documentData["DocumentID"],
+			"document":
+			{
+				"tf": tf,
+				"idf": idf,
+				"occurrences": word["Occurences"]
+			}
+		}
 
-#length is the length of the ngram desired, length(words)
-#returns list of documents
-def getDocumentsWithNgram(words,length):
-	pass
+	def getDocs(list_of_ngrams):
+
+		documentList = dl.get(list_of_ngrams)
+		return documentList
+		# for each document in documentList
+			#attach scores (tf and idf) to document
+
+	def removeDoc(documentData):
+		#get list of words
+		words = []
+		for word in documentData["Words"]["WordCounts"]:
+			words.append(word["Text"])
+		#delete document from words
+		return dl.delete_text(documentData["DocumentID"], words)
+		# for each word in document data
+			#remove document from documentList
+			#update idf score for the word
+	
+	def addDoc(documentData):
+		words = []
+		for word in documentData["Words"]["WordCounts"]:
+			words.append(changeFormat(documentData,word))
+		for bigram in documentData["NGrams"]["BiGrams"]:
+			words.append(changeFormat(documentData,bigram))
+		for trigram in documentData["NGrams"]["TriGrams"]:
+			words.append(changeFormat(documentData,trigram))
+		return dl.put(words)
+
+		# for each word in document data
+			#add document from documentList
+			#calculate tf
+			#update idf score for the word
