@@ -713,7 +713,7 @@ def test_all():
     test_update_multiplpe_line()
     test_relevant_empty()
     test_relevant_one_line()
-    test_relevant_multi_line
+    test_relevant_multi_line()
 
 if __name__ == "__main__":
     test_all() 
