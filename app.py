@@ -19,7 +19,7 @@ def relevantDocs():
         print("ngrams recieved: ",jsonData)
         result = LogicLayer.getDocs(jsonData)
         print(result)
-    return result
+    return {"documents":result}
 
 @app.route('/update', methods=['POST'])
 def update():
