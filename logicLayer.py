@@ -6,10 +6,10 @@ dl = DataLayer()
 # IDF(t) = log_e(Total number of documents / Number of documents with term t in it).
 
 #converts input to output format for adding word
-def changeFormat(self,documentData,word):
+def changeFormat(documentData,word):
 	#calculate tf and idf
-	tf = double(word["Count"]) / double(documentData["Words"]["NumWords"])
-	numDocs = len(getDocs([word["Text"]])[0]) + 1
+	tf = float(word["Count"]) / float(documentData["Words"]["NumWords"])
+	numDocs = 5#len(dl.get([word["Text"]])[0]) + 1
 	idf = np.log(10 / numDocs)
             #TODO 10 is totalDocs hardcoded till we get that from dds
 	#add word to list in proper format
@@ -27,7 +27,7 @@ def changeFormat(self,documentData,word):
 
 class LogicLayer:
 
-	def getDocs(self,ist_of_ngrams):
+	def getDocs(self,list_of_ngrams):
 
 		documentList = dl.get(list_of_ngrams)
 		return documentList
