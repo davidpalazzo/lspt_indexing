@@ -4,14 +4,13 @@ dl = DataLayer()
 
 #TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document).
 # IDF(t) = log_e(Total number of documents / Number of documents with term t in it).
+#  TF-IDF(t) = TF(t) * IDF(t)
 
 #converts input to output format for adding word
-def changeFormat(documentData,word):
-	#calculate tf and idf
+def changeFormatAdd(documentData,word):
+	#calculate tf
 	tf = float(word["Count"]) / float(documentData["Words"]["NumWords"])
-	numDocs = 5#len(dl.get([word["Text"]])[0]) + 1
-	idf = np.log(10 / numDocs)
-            #TODO 10 is totalDocs hardcoded till we get that from dds
+
 	#add word to list in proper format
 	return {
 		"text": word["Text"],
@@ -19,7 +18,6 @@ def changeFormat(documentData,word):
 		"document":
 		{
 			"tf": tf,
-			"idf": idf,
 			"occurrences": word["Occurences"]
 		}
 	}
@@ -27,10 +25,25 @@ def changeFormat(documentData,word):
 
 class LogicLayer:
 
-	def getDocs(self,list_of_ngrams):
+	def getDocs(self,liAddst_of_ngrams):
+		documentGet = dl.get(list_of_ngrams)
 
-		documentList = dl.get(list_of_ngrams)
-		return documentList
+		for doc in documentGet:
+
+
+		docs =
+
+
+
+
+		#calculate idf and tf-idf
+		numDocs = 5#len(dl.get([word["Text"]])[0]) + 1
+		#TODO 10 is totalDocs hardcoded till we get that from dds
+		idf = np.log(10 / numDocs)
+		tfidf = tf * idf
+
+
+		return docs
 		# for each document in documentList
 			#attach scores (tf and idf) to document
 
@@ -44,15 +57,15 @@ class LogicLayer:
 		# for each word in document data
 			#remove document from documentList
 			#update idf score for the word
-	
+
 	def addDoc(self,documentData):
 		words = []
 		for word in documentData["Words"]["WordCounts"]:
-			words.append(changeFormat(documentData,word))
+			words.append(changeFormatAdd(documentData,word))
 		for bigram in documentData["NGrams"]["BiGrams"]:
-			words.append(changeFormat(documentData,bigram))
+			words.append(changeFormatAdd(documentData,bigram))
 		for trigram in documentData["NGrams"]["TriGrams"]:
-			words.append(changeFormat(documentData,trigram))
+			words.append(changeFormatAdd(documentData,trigram))
 		return dl.put(words)
 
 		# for each word in document data
