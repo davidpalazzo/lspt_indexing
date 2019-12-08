@@ -6,7 +6,7 @@ dl = DataLayer()
 # IDF(t) = log_e(Total number of documents / Number of documents with term t in it).
 
 #converts input to output format for adding word
-def changeFormat(self,documentData,word):
+def changeFormat(documentData,word):
 	#calculate tf and idf
 	tf = double(word["Count"]) / double(documentData["Words"]["NumWords"])
 	numDocs = len(getDocs([word["Text"]])[0]) + 1
