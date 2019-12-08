@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append("..")
 import pprint
 from dataLayer import DataLayer
@@ -13,7 +14,6 @@ def put_example(data_layer):
                 "document":
                     {
                         "tf": 1,
-                        "idf": 2,
                         "occurrences": [12, 17, 20]
                     }
             },
@@ -24,7 +24,6 @@ def put_example(data_layer):
                 "document":
                     {
                         "tf": 3,
-                        "idf": 4,
                         "occurrences": [1, 4, 5]
                     }
             },
@@ -34,7 +33,6 @@ def put_example(data_layer):
                 "document":
                     {
                         "tf": 100,
-                        "idf": 200,
                         "occurrences": [100]
                     }
             }
@@ -65,6 +63,10 @@ if __name__ == "__main__":
     dataLayer = DataLayer()
 
     put_example(dataLayer)
+    print("=================DEBUG_MODE: print collection ==================")
+    dataLayer.debug_print_collection()
+    print("=================DEBUG_MODE: print mr collection ==================")
+    dataLayer.debug_print_mr_collection()
     print("=================Applied put example============================")
     get_example(dataLayer)
     print("=================Applied delete example============================")
