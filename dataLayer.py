@@ -315,7 +315,7 @@ class DataLayer:
         """
         print all the mr collection for debug only
         """
-        print("document found in collection: {}".format(self.collection.count_documents({})))
+        print("document found in collection: {}".format(self.mr_collection.count_documents({})))
         for result in self.mr_collection.find({}):
             pprint.pprint(result)
 
