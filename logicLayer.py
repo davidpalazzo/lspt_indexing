@@ -6,12 +6,10 @@ dl = DataLayer()
 # IDF(t) = log_e(Total number of documents / Number of documents with term t in it).
 
 #converts input to output format for adding word
-def changeFormat(documentData,word):
+def changeFormatAdd(documentData,word):
 	#calculate tf and idf
 	tf = float(word["Count"]) / float(documentData["Words"]["NumWords"])
-	numDocs = 5#len(dl.get([word["Text"]])[0]) + 1
-	idf = np.log(10 / numDocs)
-            #TODO 10 is totalDocs hardcoded till we get that from dds
+
 	#add word to list in proper format
 	return {
 		"text": word["Text"],
@@ -19,7 +17,6 @@ def changeFormat(documentData,word):
 		"document":
 		{
 			"tf": tf,
-			"idf": idf,
 			"occurrences": word["Occurences"]
 		}
 	}
@@ -39,20 +36,26 @@ class LogicLayer:
 		words = []
 		for word in documentData["Words"]["WordCounts"]:
 			words.append(word["Text"])
-		#delete document from words
+		for bigram in documentData["NGrams"]["BiGrams"]:
+			words.append(bigram["Text"])
+		for trigram in documentData["NGrams"]["TriGrams"]:
+			words.append(trigram["Text"])
+		#delete document from words in database
 		return dl.delete_text(documentData["DocumentID"], words)
 		# for each word in document data
 			#remove document from documentList
 			#update idf score for the word
-	
+
 	def addDoc(self,documentData):
+		#get list of words
 		words = []
 		for word in documentData["Words"]["WordCounts"]:
-			words.append(changeFormat(documentData,word))
+			words.append(changeFormatAdd(documentData,word))
 		for bigram in documentData["NGrams"]["BiGrams"]:
-			words.append(changeFormat(documentData,bigram))
+			words.append(changeFormatAdd(documentData,bigram))
 		for trigram in documentData["NGrams"]["TriGrams"]:
-			words.append(changeFormat(documentData,trigram))
+			words.append(changeFormatAdd(documentData,trigram))
+		#add word data to database
 		return dl.put(words)
 
 		# for each word in document data
