@@ -6,36 +6,49 @@ from logicLayer import LogicLayer
 ll = LogicLayer()
 app = Flask(__name__)
 
+'''
+Test route to make sure the server is running
+'''
 @app.route('/', methods=['GET'])
 def helloWorld():
     return json.dumps({"hello":"world"})
 
+'''
+Summary: Use this route to get a list of documents and scores for each n-gram provided.
+Workflow: Ranking will receive a query request from the user and request relevant 
+        documents from us after breaking the query into multiple n-grams.
+From: Ranking
+ERR handling: if the list of n-grams is null or non-existing, we will assume it is an 
+        error and do no work.
+'''
 @app.route('/relevantDocs', methods=['POST'])
-def relevantDocs():
-    print("received:", request)
-    
+def relevantDocs():    
     if request.method == 'POST':      
         jsonData = request.get_json()
-        print("ngrams recieved: ",jsonData)
         result = ll.getDocs(jsonData)
-        print(result)
-    return {"documents":result}
+    return result
 
+'''
+Summary: Use this route to add, update, or remove a document when information 
+        pertaining to said document has changed.
+Workflow: Crawling will determine if a document is to be added, updated, or removed,
+        and Document Data Store will give us the data for the document that has been added, that needs to be removed, or both in the case of an update.
+From: Document Data Store
+ERR handling: if documentData is null rather than non-existing, we will assume it is 
+        an error and do no work.
+'''
 @app.route('/update', methods=['POST'])
 def update():
     if request.method == 'POST':
         jsonData = request.get_json()
-        print("update recieved: ",jsonData)
-        if jsonData.get('remove'):
-            print(jsonData['remove'])
+        #if the request's remove or add section is non existant or null, do nothing
+        if jsonData.get('remove') and jsonData['remove'] != null:
             ll.removeDoc(jsonData['remove'])
-        # #then
-        if jsonData.get('add'):
-            print(jsonData['add'])
+        if jsonData.get('add') and jsonData['add'] != null:
             ll.addDoc(jsonData['add'])
         return "update post recieved"
 
-# helper functions: none yet
+# helper functions should go below this line, but none yet
 
 
 if __name__ == '__main__':
