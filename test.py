@@ -332,7 +332,8 @@ def test_add_empty():
     test relevant on an empty database
     '''
     print("ADD TESTS")
-    API_ENDPOINT = 'http://localhost:5000/update'
+    #API_ENDPOINT = 'http://localhost:5000/update'
+    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
     #test with cow
     #test with jump
     #test with fox
@@ -352,7 +353,8 @@ def test_add_one_line():
     do multiple adds
     try to add existing data
     '''
-    API_ENDPOINT = 'http://localhost:5000/update'
+    #API_ENDPOINT = 'http://localhost:5000/update'
+    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
     #test with cow, returns documents 1 and 2
     #test with jumped, returns documents 1 and 3
     #test with fox, returns documents 3 and 4
@@ -376,7 +378,8 @@ def test_add_multi_line():
     do multiple adds
     try to add existing data
     '''
-    API_ENDPOINT = 'http://localhost:5000/update'
+    #API_ENDPOINT = 'http://localhost:5000/update'
+    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
     to_add = {
         "add":DATA1
     }
@@ -403,7 +406,8 @@ def test_remove_empty():
     '''
     test remove on an empty database
     '''
-    API_ENDPOINT = 'http://localhost:5000/update'
+    #API_ENDPOINT = 'http://localhost:5000/update'
+    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
     to_remove = {
         "remove":DATA1
     }
@@ -420,7 +424,8 @@ def test_remove_one_line():
     do multiple removes
     try to remove non-existent data
     '''
-    API_ENDPOINT = 'http://localhost:5000/update'
+    #API_ENDPOINT = 'http://localhost:5000/update'
+    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
     #test with document1, all trace of document one removed
     #test with document1, document should not exist
     #test with document5, document should not exist
@@ -443,7 +448,8 @@ def test_remove_multiple_lines():
     do multiple removes
     try to remove non-existent data
     '''
-    API_ENDPOINT = 'http://localhost:5000/update'
+    #API_ENDPOINT = 'http://localhost:5000/update'
+    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
     re_add = {
         "add":DATA1
     }
@@ -471,7 +477,8 @@ def test_update_empty():
     test update on empty database
     '''
     print("Update tests")
-    API_ENDPOINT = 'http://localhost:5000/update'
+    #API_ENDPOINT = 'http://localhost:5000/update'
+    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
     #all tests will fail as it's empty
     to_update = {
         "remove":DATA1,
@@ -488,7 +495,8 @@ def test_update_one_line():
     do multiple removes
     try to remove non-existent data
     '''
-    API_ENDPOINT = 'http://localhost:5000/update'
+    #API_ENDPOINT = 'http://localhost:5000/update'
+    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
     #test with document1 without cow, cow should no longer be in d1
     #test with document2, without cow, cow should no lonber be in d2
     #test with document3, without white and fox, both should no longer be in d3
@@ -517,7 +525,8 @@ def test_update_multiplpe_line():
     do multiple removes
     try to remove non-existent data
     '''
-    API_ENDPOINT = 'http://localhost:5000/update'
+    #API_ENDPOINT = 'http://localhost:5000/update'
+    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
     #test updating d1 multiple tiems
     #test updating d2 multiple times
     #test updating d3 multiple times
@@ -711,9 +720,8 @@ def test_relevant_empty():
     '''
     test relevant on an empty database
     '''
-    API_ENDPOINT = 'http://localhost:5000/relevantDocs'
-    #API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000'
-
+    #API_ENDPOINT = 'http://localhost:5000/relevantDocs'
+    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/relevantDocs'
     to_send = ["Cow"]
     response = requests.post(API_ENDPOINT, json=to_send)
     #response = requests.get(API_ENDPOINT)
@@ -734,8 +742,10 @@ def test_relevant_one_line():
     Returns multiple documents
     Returns no documents as none exist
     '''
-    API_ENDPOINT = 'http://localhost:5000/relevantDocs'
-    API_ENDPOINT_ADD = 'http://localhost:5000/update'
+    #API_ENDPOINT = 'http://localhost:5000/relevantDocs'
+    #API_ENDPOINT_ADD = 'http://localhost:5000/update'
+    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/relevantDocs'
+    API_ENDPOINT_ADD = 'http://lspt-index1.cs.rpi.edu:5000/update'
     test_data = {
         "add": REL_DATA
     }
@@ -750,7 +760,7 @@ def test_relevant_one_line():
     print(response1.text)
     response2 = requests.post(API_ENDPOINT, json=to_send_2) #return data 1 and 2
     print(response2.text)
-    dl.debug_print_mr_collection()
+    #dl.debug_print_mr_collection()
     #test with cow
     #test with jump
     #test with fox
@@ -763,8 +773,10 @@ def test_relevant_multi_line():
     Returns multiple documents
     Returns no documents as none exist
     '''
-    API_ENDPOINT = 'http://localhost:5000/relevantDocs'
-    API_ENDPOINT_ADD = 'http://localhost:5000/update'
+    #API_ENDPOINT = 'http://localhost:5000/relevantDocs'
+    #API_ENDPOINT_ADD = 'http://localhost:5000/update'
+    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/relevantDocs'
+    API_ENDPOINT_ADD = 'http://lspt-index1.cs.rpi.edu:5000/update'
     test_data_3 = {
         "add": REL_DATA_3
     }
@@ -802,7 +814,7 @@ def test_all():
     #test_update_one_line()
     #test_update_multiplpe_line()
     #clear_up(dl)
-    #test_relevant_empty()
+    test_relevant_empty()
     print("After first test")
     test_relevant_one_line()
     print("After second test")
