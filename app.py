@@ -42,9 +42,9 @@ def update():
     if request.method == 'POST':
         jsonData = request.get_json()
         #if the request's remove or add section is non existant or null, do nothing
-        if jsonData.get('remove') and jsonData['remove'] != null:
+        if jsonData.get('remove') and jsonData['remove'] is not None:
             ll.removeDoc(jsonData['remove'])
-        if jsonData.get('add') and jsonData['add'] != null:
+        if jsonData.get('add') and jsonData['add'] is not None:
             ll.addDoc(jsonData['add'])
         return "update post recieved"
 
