@@ -1,4 +1,4 @@
-from dataLayer import DataLayer
+from dataLayer import *
 import numpy as np
 
 
@@ -52,7 +52,11 @@ class LogicLayer:
         """
         constructor generate the constant of data layer
         """
-        self.dataLayer = DataLayer()
+        try:
+            self.dataLayer = DataLayer()
+        except DataBaseException:
+            print("Fail to connect to data base")
+            raise DataBaseException()
 
     def getDocs(self, list_of_ngrams):
         """
@@ -99,8 +103,11 @@ class LogicLayer:
         :return: the result of list of word
         """
 
-        # get the documents from data layer
-        contents = self.dataLayer.get(list_of_ngrams)
+        try:
+            # get the documents from data layer
+            contents = self.dataLayer.get(list_of_ngrams)
+        except DataBaseGetFail:
+            return dict()
 
         # transform the format
         ret = dict()
@@ -117,6 +124,7 @@ class LogicLayer:
                 documentData["tf"] = documents[doc_id]["tf"]
                 documentData['tf-idf'] = documentData["tf"] * idf
                 ret[text][doc_id] = documentData
+        return ret
 
     def removeDoc(self, documentData):
         """
@@ -133,8 +141,13 @@ class LogicLayer:
         for trigram in documentData["NGrams"]["TriGrams"]:
             words.append(trigram["Text"])
 
-        # delete document from words
-        return self.dataLayer.delete_text(documentData["DocumentID"], words)
+        try:
+            # delete document from words
+            return self.dataLayer.delete_text(documentData["DocumentID"], words)
+        except DataBaseDeleteFail:
+            # TODO: Error code stands for internal error
+            print("DataBaseDeleteFail")
+            return
 
     # for each word in document data
     # remove document from documentList
@@ -154,7 +167,13 @@ class LogicLayer:
             words.append(changeFormatAdd(documentData, bigram))
         for trigram in documentData["NGrams"]["TriGrams"]:
             words.append(changeFormatAdd(documentData, trigram))
-        return self.dataLayer.put(words)
+
+        try:
+            return self.dataLayer.put(words)
+        except DataBasePutFail:
+            # TODO: Error code stands for internal error
+            print("DataBasePutFail")
+            return False
 
         # for each word in document data
         # add document from documentList
