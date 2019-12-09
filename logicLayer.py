@@ -1,7 +1,6 @@
 from dataLayer import DataLayer
 import numpy as np
 
-
 def changeFormatAdd(documentData, word):
     """
     changeFormatAdd change the input the data format to the one can be accepted by database
@@ -126,7 +125,11 @@ class LogicLayer:
         # get list of words
         words = []
         for word in documentData["Words"]["WordCounts"]:
-            words.append(word["Text"])
+			      words.append(word["Text"])
+		    for bigram in documentData["NGrams"]["BiGrams"]:
+			      words.append(bigram["Text"])
+		    for trigram in documentData["NGrams"]["TriGrams"]:
+			      words.append(trigram["Text"])
         # delete document from words
         return self.dataLayer.delete_text(documentData["DocumentID"], words)
 
