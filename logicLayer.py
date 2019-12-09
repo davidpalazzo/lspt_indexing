@@ -1,7 +1,6 @@
 from dataLayer import *
 import numpy as np
 
-
 def changeFormatAdd(documentData, word):
     """
     changeFormatAdd change the input the data format to the one can be accepted by database
