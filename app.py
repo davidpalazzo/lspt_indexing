@@ -3,7 +3,7 @@ import sqlite3
 from flask import Flask, request, jsonify
 from logicLayer import LogicLayer
 
-
+ll = LogicLayer()
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
@@ -17,9 +17,9 @@ def relevantDocs():
     if request.method == 'POST':      
         jsonData = request.get_json()
         print("ngrams recieved: ",jsonData)
-        result = LogicLayer.getDocs(jsonData)
+        result = ll.getDocs(jsonData)
         print(result)
-    return result
+    return {"documents":result}
 
 @app.route('/update', methods=['POST'])
 def update():
@@ -28,11 +28,11 @@ def update():
         print("update recieved: ",jsonData)
         if jsonData.get('remove'):
             print(jsonData['remove'])
-            LogicLayer.removeDoc(jsonData['remove'])
+            ll.removeDoc(jsonData['remove'])
         # #then
         if jsonData.get('add'):
             print(jsonData['add'])
-            LogicLayer.addDoc(jsonData['add'])
+            ll.addDoc(jsonData['add'])
         return "update post recieved"
 
 # helper functions: none yet

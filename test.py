@@ -2,16 +2,20 @@
 import requests
 import json
 from unittest.mock import Mock, patch
+from dataLayer import DataLayer
 
 '''
 A series of tests testing the add document function
 
 '''
 
+dl = DataLayer()
+
 DATA1 = {
+    "DocumentID": "test_1",
     "Words":{
-        "NumWords": 20,
-        "NumDistinctWords": 10,
+        "NumWords": 8,
+        "NumDistinctWords": 2,
         "WordCounts": [
             {
                 "Text": "Lambda",
@@ -26,7 +30,7 @@ DATA1 = {
             },
             {
                 "Text": "Cow",
-                "Count": 5,
+                "Count": 3,
                 "Occurences":[
                     10,
                     11,
@@ -34,13 +38,22 @@ DATA1 = {
                 ]
             }
         ]
+    },
+    "NGrams":{
+        "BiGrams":[
+
+        ],
+        "TriGrams":[
+
+        ]
     }
 }
 
 DATA3 = {
+    "DocumentID": "test_1",
     "Words":{
-        "NumWords": 20,
-        "NumDistinctWords": 10,
+        "NumWords": 6,
+        "NumDistinctWords": 2,
         "WordCounts": [
             {
                 "Text": "Lambda",
@@ -61,14 +74,23 @@ DATA3 = {
                 ]
             }
         ]
+    },
+    "NGrams":{
+        "BiGrams":[
+
+        ],
+        "TriGrams":[
+
+        ]
     }
 }
 
 
 DATA2 = {
+    "DocumentID": "test_2",
     "Words":{
-        "NumWords": 40,
-        "NumDistinctWords":30,
+        "NumWords": 9,
+        "NumDistinctWords":3,
         "WordCounts":[
             {
                 "Text": "Lambda",
@@ -100,7 +122,7 @@ DATA2 = {
         ]
     },
     "NGrams":{
-        "Bigrams":[
+        "BiGrams":[
             {
                 "Text": "Lambda Calculus",
                 "Count":3,
@@ -110,14 +132,18 @@ DATA2 = {
                     5
                 ]
             }
+        ],
+        "TriGrams":[
+
         ]
     }
 }
 
 DATA4 = {
+    "DocumentID":"test_2",
     "Words":{
-        "NumWords": 40,
-        "NumDistinctWords":30,
+        "NumWords": 7,
+        "NumDistinctWords":3,
         "WordCounts":[
             {
                 "Text": "Lambda",
@@ -147,7 +173,7 @@ DATA4 = {
         ]
     },
     "NGrams":{
-        "Bigrams":[
+        "BiGrams":[
             {
                 "Text": "Lambda Calculus",
                 "Count":2,
@@ -156,14 +182,18 @@ DATA4 = {
                     4
                 ]
             }
+        ],
+        "TriGrams":[
+
         ]
     }
 }
 
 DATA5 = {
+    "DocumentID":"test_3",
     "Words":{
-        "NumWords":40,
-        "NumDistinctWords": 25,
+        "NumWords":6,
+        "NumDistinctWords": 3,
         "WordCounts":[
             {
                 "Text": "Cow",
@@ -192,7 +222,7 @@ DATA5 = {
         ]
     },
     "NGrams":{
-        "Bigrams":[
+        "BiGrams":[
             {
                 "Text": "Cow Milk",
                 "Count":2,
@@ -217,7 +247,7 @@ DATA5 = {
                 ]
             }
         ],
-        "Trigrams":[
+        "TriGrams":[
             {
                 "Text":"Cow Milk Good",
                 "Count":2,
@@ -230,9 +260,10 @@ DATA5 = {
     }
 }
 DATA6= {
+    "DocumentID":"test_3",
     "Words":{
-        "NumWords":40,
-        "NumDistinctWords": 25,
+        "NumWords":5,
+        "NumDistinctWords": 3,
         "WordCounts":[
             {
                 "Text": "Cow",
@@ -260,7 +291,7 @@ DATA6= {
         ]
     },
     "NGrams":{
-        "Bigrams":[
+        "BiGrams":[
             {
                 "Text": "Cow Milk",
                 "Count":2,
@@ -284,12 +315,12 @@ DATA6= {
                 ]
             }
         ],
-        "Trigrams":[
+        "TriGrams":[
             {
                 "Text":"Cow Milk Good",
                 "Count":1,
                 "Occurences":[
-                    1,
+                    1
                 ]
             }
         ]
@@ -300,7 +331,8 @@ def test_add_empty():
     '''
     test relevant on an empty database
     '''
-    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
+    print("ADD TESTS")
+    API_ENDPOINT = 'http://localhost:5000/update'
     #test with cow
     #test with jump
     #test with fox
@@ -309,6 +341,8 @@ def test_add_empty():
         "add":DATA1
     }
     result = requests.post(API_ENDPOINT, json = to_add)
+    print("Test empty")
+    dl.debug_print_mr_collection()
     print(result.status_code)
     assert result.status_code == 200
     
@@ -318,19 +352,21 @@ def test_add_one_line():
     do multiple adds
     try to add existing data
     '''
-    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
+    API_ENDPOINT = 'http://localhost:5000/update'
     #test with cow, returns documents 1 and 2
     #test with jumped, returns documents 1 and 3
     #test with fox, returns documents 3 and 4
     #test with random, returns no documents
     to_add = {
-        "add":{DATA1}
+        "add":DATA1
     }
     to_add2 = {
-        "add":{DATA2}
+        "add":DATA2
     }
     result = requests.post(API_ENDPOINT, json = to_add)
     result2 = requests.post(API_ENDPOINT, json = to_add2)
+    print("Test one line")
+    dl.debug_print_mr_collection()
     assert result.status_code == 200
     assert result2.status_code == 200
     
@@ -340,36 +376,43 @@ def test_add_multi_line():
     do multiple adds
     try to add existing data
     '''
-    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
+    API_ENDPOINT = 'http://localhost:5000/update'
     to_add = {
-        "add":{DATA1}
+        "add":DATA1
     }
     to_add_2 = {
         "add":DATA2
     }
     to_add_3 = {
-        "add":{DATA3}
+        "add":DATA5
     }
     result = requests.post(API_ENDPOINT, json = to_add)
     result2 = requests.post(API_ENDPOINT, json = to_add_2)
     result3 = requests.post(API_ENDPOINT, json = to_add_3)
-    assert result == "update post recieved"
+    print("Test multi line")
+    dl.debug_print_mr_collection()
+    assert result.status_code == 200
+    assert result2.status_code == 200
+    assert result3.status_code == 200
 
 '''
 A series of tests adding 
 '''
 def test_remove_empty():
+    print("Remove Tests")
     '''
     test remove on an empty database
     '''
-    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
-    to_add = {
+    API_ENDPOINT = 'http://localhost:5000/update'
+    to_remove = {
         "remove":DATA1
     }
-    result = requests.post(API_ENDPOINT, json = to_add)
-    result_dup = requests.post(API_ENDPOINT, json = to_add)
+    requests.post(API_ENDPOINT, json = to_remove)
+    result = requests.post(API_ENDPOINT, json = to_remove)
+    print("After empty")
+    dl.debug_print_mr_collection()
     #all tests will return that database is empty
-    assert 1 == 1
+    assert result.status_code == 200
 
 def test_remove_one_line():
     '''
@@ -377,7 +420,7 @@ def test_remove_one_line():
     do multiple removes
     try to remove non-existent data
     '''
-    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
+    API_ENDPOINT = 'http://localhost:5000/update'
     #test with document1, all trace of document one removed
     #test with document1, document should not exist
     #test with document5, document should not exist
@@ -389,9 +432,10 @@ def test_remove_one_line():
         "remove":DATA1
     }
     requests.post(API_ENDPOINT, json = re_add)
-    print("data removed")
     result = requests.post(API_ENDPOINT, json = remove)
-    assert result == "update post recieved"
+    print("After one line")
+    dl.debug_print_mr_collection()
+    assert result.status_code == 200
 
 def test_remove_multiple_lines():
     '''
@@ -399,7 +443,7 @@ def test_remove_multiple_lines():
     do multiple removes
     try to remove non-existent data
     '''
-    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
+    API_ENDPOINT = 'http://localhost:5000/update'
     re_add = {
         "add":DATA1
     }
@@ -410,27 +454,32 @@ def test_remove_multiple_lines():
         "remove":DATA2
     }
     remove_3 = {
-        "remove":DATA3
+        "remove":DATA5
     }
     requests.post(API_ENDPOINT, json = re_add)
-    result = requests.post(API_ENDPOINT, remove)
-    result_2 = requests.post(API_ENDPOINT, remove_2)
-    result_3 = requests.post(API_ENDPOINT, remove_3)
-    assert result == "update post recieved"
+    result = requests.post(API_ENDPOINT, json = remove)
+    result_2 = requests.post(API_ENDPOINT, json = remove_2)
+    result_3 = requests.post(API_ENDPOINT, json = remove_3)
+    print("After multi_line")
+    dl.debug_print_mr_collection()
+    assert result.status_code == 200
+    assert result_2.status_code == 200
+    assert result_3.status_code == 200
     
 def test_update_empty():
     '''
     test update on empty database
     '''
-    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
+    API_ENDPOINT = 'http://localhost:5000/update'
     #all tests will fail as it's empty
     to_update = {
         "remove":DATA1,
         "add":DATA3
     }
-    print("gets here")
+    print("After update")
     result = requests.post(API_ENDPOINT, json = to_update)
-    assert result == "update post recieved"
+    dl.debug_print_mr_collection()
+    assert result.status_code == 200
 
 def test_update_one_line():
     '''
@@ -438,22 +487,27 @@ def test_update_one_line():
     do multiple removes
     try to remove non-existent data
     '''
-    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
+    API_ENDPOINT = 'http://localhost:5000/update'
     #test with document1 without cow, cow should no longer be in d1
     #test with document2, without cow, cow should no lonber be in d2
     #test with document3, without white and fox, both should no longer be in d3
     #test with document4, without small, should no longer be in d4
     #attempt to update a document that doesn't exist, should return error
+    to_remove = {
+        "remove":DATA3
+    }
     to_add = {
-        "add":{DATA1}
+        "add":DATA1
     }
     to_update = {
-        "remove":{DATA1},
-        "add":{DATA3}
+        "remove":DATA1,
+        "add":DATA3
     }
-    result = requests.post(API_ENDPOINT, json = to_add)
+    requests.post(API_ENDPOINT, json = to_remove)
+    requests.post(API_ENDPOINT, json = to_add)
     result = requests.post(API_ENDPOINT, json = to_update)
-    assert result == "update post recieved"
+    dl.debug_print_mr_collection()
+    assert result.status_code == 200
 
 def test_update_multiplpe_line():
     '''
@@ -461,29 +515,32 @@ def test_update_multiplpe_line():
     do multiple removes
     try to remove non-existent data
     '''
-    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
+    API_ENDPOINT = 'http://localhost:5000/update'
     #test updating d1 multiple tiems
     #test updating d2 multiple times
     #test updating d3 multiple times
     to_add = {
-        "add":{DATA2}
+        "add":DATA2
     }
     to_update = {
-        "remove":{DATA2},
-        "add":{DATA4}
+        "remove":DATA2,
+        "add":DATA4
     }
     to_add_2 = {
-        "add":{DATA5}
+        "add":DATA5
     }
     to_update_2 = {
-        "remove":{DATA5},
-        "add":{DATA6}
+        "remove":DATA5,
+        "add":DATA6
     }
-    result = requests.post(API_ENDPOINT, json = to_add)
+    requests.post(API_ENDPOINT, json = to_add)
     result = requests.post(API_ENDPOINT, json = to_update)
-    result = requests.post(API_ENDPOINT, json = to_add_2)
-    result = requests.post(API_ENDPOINT, json = to_update_2)
-    assert result == "update post recieved"
+    requests.post(API_ENDPOINT, json = to_add_2)
+    result2 = requests.post(API_ENDPOINT, json = to_update_2)
+    dl.debug_print_mr_collection()
+    print(result.text)
+    assert result.status_code == 200
+    assert result2.status_code == 200
 
 '''
 A series of tests testing the relevant document function
@@ -625,18 +682,25 @@ REL_DATA_3 = {
     }
 }
 
+def clear_up(data_layer):
+    data_layer.collection.delete_many({})
+    data_layer.mr_collection.delete_many({})
+    assert data_layer.collection.count_documents({}) == 0
+    assert data_layer.mr_collection.count_documents({}) == 0
+    data_layer.collection.drop()
+    data_layer.mr_collection.drop()
+
 def test_relevant_empty():
     '''
     test relevant on an empty database
     '''
-    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/relevantDocs'
+    API_ENDPOINT = 'http://localhost:5000/relevantDocs'
     #API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000'
 
-    to_send = ["lspt"]
-    to_send = ["homework"]
+    to_send = ["Cow"]
     response = requests.post(API_ENDPOINT, json=to_send)
     #response = requests.get(API_ENDPOINT)
-    print(response)
+    print(response.text)
     if response:
         print('Success!')
     else:
@@ -702,18 +766,19 @@ def test_relevant_multi_line():
 def test_all():
     #test all commands here
     #return which ones fail, which ones don't
+    clear_up(dl)
     test_add_empty()
     test_add_one_line()
     test_add_multi_line()
-    test_remove_empty
+    test_remove_empty()
     test_remove_one_line()
     test_remove_multiple_lines()
     test_update_empty()
     test_update_one_line()
     test_update_multiplpe_line()
-    test_relevant_empty()
-    test_relevant_one_line()
-    test_relevant_multi_line()
+    #test_relevant_empty()
+    #test_relevant_one_line()
+    #test_relevant_multi_line()
 
 if __name__ == "__main__":
     test_all() 
