@@ -87,12 +87,12 @@ class LogicLayer:
 
         transformed format
         {
-           “NGRAM1”:
+           "NGRAM1":
             {
-               “DocumentId1”:{documentData},
-               “DocumentId2”: {documentData},...
+               "DocumentId1":{documentData},
+               "DocumentId2": {documentData},...
             },
-            “NGRAM2”:...
+            "NGRAM2":...
         }
 
         :param list_of_ngrams: list of words that need to query
