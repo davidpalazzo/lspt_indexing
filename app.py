@@ -26,7 +26,7 @@ def relevantDocs():
     if request.method == 'POST':      
         jsonData = request.get_json()
         result = ll.getDocs(jsonData)
-    return result
+        return result
 
 '''
 Summary: Use this route to add, update, or remove a document when information 
