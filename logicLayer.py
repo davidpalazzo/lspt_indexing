@@ -117,6 +117,7 @@ class LogicLayer:
                 documentData["tf"] = documents[doc_id]["tf"]
                 documentData['tf-idf'] = documentData["tf"] * idf
                 ret[text][doc_id] = documentData
+        return ret
 
     def removeDoc(self, documentData):
         """
