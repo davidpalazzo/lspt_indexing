@@ -19,7 +19,7 @@ def relevantDocs():
         print("ngrams recieved: ",jsonData)
         result = ll.getDocs(jsonData)
         print(result)
-    return {"documents":result}
+    return result
 
 @app.route('/update', methods=['POST'])
 def update():
