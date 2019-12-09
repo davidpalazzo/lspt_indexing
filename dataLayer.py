@@ -296,6 +296,8 @@ class DataLayer:
                 # assert the content is unique with "_id"
                 assert (self.mr_collection.count_documents(query) <= 1)
                 one = self.mr_collection.find_one(query)
+                if one is None:
+                    one = {"_id": text, "value": {"documents": {}}}
                 result_list.append(one)
             return result_list
         except Exception:
