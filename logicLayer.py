@@ -1,6 +1,7 @@
 from dataLayer import DataLayer
 import numpy as np
 
+
 def changeFormatAdd(documentData, word):
     """
     changeFormatAdd change the input the data format to the one can be accepted by database
@@ -60,26 +61,27 @@ class LogicLayer:
 
         from data layer
         [
-            {
-            “_id”:“Cow”,
-            “value”:{
-                “documents”:
-                    {
-                        “docid1”:
-                            {
-                                “idf”:0.6931471805599453,
-                                “occurrences”:[10.0,11.0,12.0],
-                                “tf”:0.25,
-                                “ts”:1575842072.742201}
-                            },
-                        "docid2":
-                            {
-                                “idf”:0.6931471805599453,
-                                “occurrences”:[10.0,11.0,12.0],
-                                “tf”:0.25,
-                                “ts”:1575842072.742201}
-                            }
+             {
+                "_id": "my_word",
+                "value": {
+                    "documents": {
+                        "5da65f292f67f000015296c":
+                        {
+                            "tf": 0.308,
+                            "idf": 2.996,
+                            "occurrences": [1, 4, 10, 13]
+                            "ts": "20190817xxxx",
+                        },
+
+                        "2kn3sdf0012nh19287560d":
+                        {
+                            "tf": 0.416,
+                            "idf": 3.0,
+                            "occurrences": [1, 4]
+                            "ts": "20190817xxxx",
+                        }
                     }
+                }
             }
         ]
 
@@ -125,17 +127,18 @@ class LogicLayer:
         # get list of words
         words = []
         for word in documentData["Words"]["WordCounts"]:
-			      words.append(word["Text"])
-		    for bigram in documentData["NGrams"]["BiGrams"]:
-			      words.append(bigram["Text"])
-		    for trigram in documentData["NGrams"]["TriGrams"]:
-			      words.append(trigram["Text"])
+            words.append(word["Text"])
+        for bigram in documentData["NGrams"]["BiGrams"]:
+            words.append(bigram["Text"])
+        for trigram in documentData["NGrams"]["TriGrams"]:
+            words.append(trigram["Text"])
+
         # delete document from words
         return self.dataLayer.delete_text(documentData["DocumentID"], words)
 
-        # for each word in document data
-        # remove document from documentList
-        # update idf score for the word
+    # for each word in document data
+    # remove document from documentList
+    # update idf score for the word
 
     def addDoc(self, documentData):
         """
