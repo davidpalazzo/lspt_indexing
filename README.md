@@ -26,6 +26,10 @@ write test cases in test.py
 4. hostname is lspt-index1.cs.rpi.edu
 5. password is also in email with subject: csci4460
 
+### PEP8 links
+https://dev.to/j0nimost/setting-up-pep8-and-pylint-on-vs-code-34h
+https://pypi.org/project/pep8/
+
 ### Testing apis:
 for ```app.post('/:id/all_words_and_ngrams'```
 use following as body on restlet/postman at localhost:5000
@@ -66,7 +70,3 @@ use following as body on restlet/postman at localhost:5000
         ]
     }
 }```
-
-### PEP8 links
-https://dev.to/j0nimost/setting-up-pep8-and-pylint-on-vs-code-34h
-https://pypi.org/project/pep8/
