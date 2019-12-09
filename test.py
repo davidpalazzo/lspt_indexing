@@ -470,13 +470,14 @@ def test_update_empty():
     '''
     test update on empty database
     '''
+    print("Update tests")
     API_ENDPOINT = 'http://localhost:5000/update'
     #all tests will fail as it's empty
     to_update = {
         "remove":DATA1,
         "add":DATA3
     }
-    print("After update")
+    print("update empty")
     result = requests.post(API_ENDPOINT, json = to_update)
     dl.debug_print_mr_collection()
     assert result.status_code == 200
@@ -503,6 +504,7 @@ def test_update_one_line():
         "remove":DATA1,
         "add":DATA3
     }
+    print("update one line")
     requests.post(API_ENDPOINT, json = to_remove)
     requests.post(API_ENDPOINT, json = to_add)
     result = requests.post(API_ENDPOINT, json = to_update)
@@ -533,6 +535,7 @@ def test_update_multiplpe_line():
         "remove":DATA5,
         "add":DATA6
     }
+    print("update multi line")
     requests.post(API_ENDPOINT, json = to_add)
     result = requests.post(API_ENDPOINT, json = to_update)
     requests.post(API_ENDPOINT, json = to_add_2)
@@ -548,6 +551,7 @@ It tests on an empty database, on single line documents, and multi-line document
 '''
 
 REL_DATA = {
+    "DocumentID":"data1",
     "Words":{
         "NumWords":5,
         "NumDistinctWords":2,
@@ -570,10 +574,19 @@ REL_DATA = {
                 ]
             }
         ]
+    },
+    "NGrams":{
+        "BiGrams":[
+
+        ],
+        'TriGrams':[
+
+        ]
     }
 }
 
 REL_DATA_2 = {
+    "DocumentID":"data2",
     "Words":{
         "NumWords":8,
         "NumDistinctWords":2,
@@ -601,7 +614,7 @@ REL_DATA_2 = {
         ]
     },
     "NGrams":{
-        "Bigram":[
+        "BiGrams":[
             {
                 "Text": "Good Food",
                 "Count": 4,
@@ -621,11 +634,15 @@ REL_DATA_2 = {
                     6
                 ]
             }
+        ],
+        "TriGrams":[
+            
         ]
     }
 }
 
 REL_DATA_3 = {
+    "DocumentID":"data3",
     "Words":{
         "NumWords":6,
         "NumDistinctWords":3,
@@ -654,7 +671,7 @@ REL_DATA_3 = {
         ]
     },
     "NGrams":{
-            "Bigrams":[
+            "BiGrams":[
                 {
                     "Text": "Good Coding",
                     "Count":1,
@@ -670,7 +687,7 @@ REL_DATA_3 = {
                     ]
                 }
             ],
-            "Trigrams":[
+            "TriGrams":[
                 {
                     "Text": "Good Coding Practices",
                     "Count":1,
@@ -717,8 +734,8 @@ def test_relevant_one_line():
     Returns multiple documents
     Returns no documents as none exist
     '''
-    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/relevantDocs'
-    API_ENDPOINT_ADD = 'http://lspt-index1.cs.rpi.edu:5000/update'
+    API_ENDPOINT = 'http://localhost:5000/relevantDocs'
+    API_ENDPOINT_ADD = 'http://localhost:5000/update'
     test_data = {
         "add": REL_DATA
     }
@@ -730,7 +747,10 @@ def test_relevant_one_line():
     requests.post(API_ENDPOINT_ADD, json = test_data)
     requests.post(API_ENDPOINT_ADD, json = test_data_2)
     response1 = requests.post(API_ENDPOINT, json=to_send_1) #return data 1
-    responde2 = requests.post(API_ENDPOINT, json=to_send_2) #return data 1 and 2
+    print(response1.text)
+    response2 = requests.post(API_ENDPOINT, json=to_send_2) #return data 1 and 2
+    print(response2.text)
+    dl.debug_print_mr_collection()
     #test with cow
     #test with jump
     #test with fox
@@ -743,8 +763,8 @@ def test_relevant_multi_line():
     Returns multiple documents
     Returns no documents as none exist
     '''
-    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/relevantDocs'
-    API_ENDPOINT_ADD = 'http://lspt-index1.cs.rpi.edu:5000/update'
+    API_ENDPOINT = 'http://localhost:5000/relevantDocs'
+    API_ENDPOINT_ADD = 'http://localhost:5000/update'
     test_data_3 = {
         "add": REL_DATA_3
     }
@@ -754,31 +774,40 @@ def test_relevant_multi_line():
     to_send_4 = ["Good Food"]
     to_send_5 = ["Good Coding"]
     to_send_6 = ["Good Coding Practices"]
-    response = requests.post(API_ENDPOINT_ADD, json=test_data_3)
-    respone1 = requests.post(API_ENDPOINT, json = to_send_1)
-    respone2 = requests.post(API_ENDPOINT, json = to_send_2)
-    respone3 = requests.post(API_ENDPOINT, json = to_send_3)
-    respone4 = requests.post(API_ENDPOINT, json = to_send_4)
-    respone5 = requests.post(API_ENDPOINT, json = to_send_5)
-    respone6 = requests.post(API_ENDPOINT, json = to_send_6)
-    assert 1 == 1
-
+    requests.post(API_ENDPOINT_ADD, json=test_data_3)
+    response1 = requests.post(API_ENDPOINT, json = to_send_1)#data1, data2, data3
+    print(response1.text)
+    response2 = requests.post(API_ENDPOINT, json = to_send_2)#data2
+    print(response2.text)
+    response3 = requests.post(API_ENDPOINT, json = to_send_3)#data3
+    print(response3.text)
+    response4 = requests.post(API_ENDPOINT, json = to_send_4)#data2
+    print(response4.text)
+    response5 = requests.post(API_ENDPOINT, json = to_send_5)#data3
+    print(response5.text)
+    response6 = requests.post(API_ENDPOINT, json = to_send_6)#data3
+    print(response6.text)
+6
 def test_all():
     #test all commands here
     #return which ones fail, which ones don't
     clear_up(dl)
-    test_add_empty()
-    test_add_one_line()
-    test_add_multi_line()
-    test_remove_empty()
-    test_remove_one_line()
-    test_remove_multiple_lines()
-    test_update_empty()
-    test_update_one_line()
-    test_update_multiplpe_line()
+    #test_add_empty()
+    #test_add_one_line()
+    #test_add_multi_line()
+    #test_remove_empty()
+    #test_remove_one_line()
+    #test_remove_multiple_lines()
+    #test_update_empty()
+    #test_update_one_line()
+    #test_update_multiplpe_line()
+    #clear_up(dl)
     #test_relevant_empty()
-    #test_relevant_one_line()
-    #test_relevant_multi_line()
+    print("After first test")
+    test_relevant_one_line()
+    print("After second test")
+    test_relevant_multi_line()
+    print("After third test")
 
 if __name__ == "__main__":
     test_all() 
