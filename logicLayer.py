@@ -1,15 +1,18 @@
-from dataLayer import DataLayer
+from dataLayer import *
 import numpy as np
 
 
 def changeFormatAdd(documentData, word):
     """
-    changeFormatAdd change the input the data format to the one can be accepted by database
+    changeFormatAdd change the input the data format to the one can be accepted
+    by database
     :param documentData:
     :param word: the word of the document data refer to
     :return: the format could be accepted by database
+
+    TF(t) = (Number of times term t appears in a document) / (Total number of
+    terms in the document).
     """
-    # TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document).
     tf = float(word["Count"]) / float(documentData["Words"]["NumWords"])
 
     # add word to list in proper format
@@ -33,7 +36,7 @@ def calculateIDF(numDocsForWord):
     # ask dds for num documents
     # TODO: currently hard code the number of document as 10
     total = 10
-    # IDF(t) = log_e(Total number of documents / Number of documents with term t in it).
+    # IDF(t) = log_e(Total num of docs / Number of docs with term t in it).
     return np.log(total / numDocsForWord)
 
 
@@ -41,10 +44,12 @@ class LogicLayer:
     """
     LogicLayer supposed to handle all the logic in component,
     for example calculate tf, idf, tf-idf, and transforming format, etc.
-    It remain the extensibility of the system, and may involve the multiprocessing in future.
+    It remain the extensibility of the system, and may involve the
+    multiprocessing in future.
 
-    TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document).
-    IDF(t) = log_e(Total number of documents / Number of documents with term t in it).
+    TF(t) = (Number of times term t appears in a document) / (Total number of
+    terms in the document).
+    IDF(t) = log_e(Total num of docs / Num of docs with term t in it).
     TF-IDF(t) = TF(t) * IDF(t)
     """
 
@@ -52,7 +57,11 @@ class LogicLayer:
         """
         constructor generate the constant of data layer
         """
-        self.dataLayer = DataLayer()
+        try:
+            self.dataLayer = DataLayer()
+        except DataBaseException:
+            print("Fail to connect to data base")
+            raise DataBaseException()
 
     def getDocs(self, list_of_ngrams):
         """
@@ -99,8 +108,11 @@ class LogicLayer:
         :return: the result of list of word
         """
 
-        # get the documents from data layer
-        contents = self.dataLayer.get(list_of_ngrams)
+        try:
+            # get the documents from data layer
+            contents = self.dataLayer.get(list_of_ngrams)
+        except DataBaseGetFail:
+            return dict()
 
         # transform the format
         ret = dict()
@@ -117,7 +129,7 @@ class LogicLayer:
                 documentData["tf"] = documents[doc_id]["tf"]
                 documentData['tf-idf'] = documentData["tf"] * idf
                 ret[text][doc_id] = documentData
-            return ret
+        return ret
 
     def removeDoc(self, documentData):
         """
@@ -134,12 +146,14 @@ class LogicLayer:
         for trigram in documentData["NGrams"]["TriGrams"]:
             words.append(trigram["Text"])
 
-        # delete document from words
-        return self.dataLayer.delete_text(documentData["DocumentID"], words)
-
-    # for each word in document data
-    # remove document from documentList
-    # update idf score for the word
+        try:
+            # delete document from words
+            doc_id = documentData["DocumentID"]
+            return self.dataLayer.delete_text(doc_id, words)
+        except DataBaseDeleteFail:
+            # TODO: Error code stands for internal error
+            print("DataBaseDeleteFail")
+            return
 
     def addDoc(self, documentData):
         """
@@ -155,7 +169,13 @@ class LogicLayer:
             words.append(changeFormatAdd(documentData, bigram))
         for trigram in documentData["NGrams"]["TriGrams"]:
             words.append(changeFormatAdd(documentData, trigram))
-        return self.dataLayer.put(words)
+
+        try:
+            return self.dataLayer.put(words)
+        except DataBasePutFail:
+            # TODO: Error code stands for internal error
+            print("DataBasePutFail")
+            return False
 
         # for each word in document data
         # add document from documentList
