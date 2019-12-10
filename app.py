@@ -29,8 +29,9 @@ def relevantDocs():
             assume it is an error and do no work.
     '''
     if request.method == 'POST':
-        jsonData = request.form
+        jsonData = request.get_json()
         result = ll.getDocs(jsonData)
+        print(result)
         return result
 
 
