@@ -826,6 +826,12 @@ def test_relevant_multi_line():
     #  returns data3
     response6 = requests.post(API_ENDPOINT, json=to_send_6)
     print(response6.text)
+    assert response1.status_code == 200
+    assert response2.status_code == 200
+    assert response3.status_code == 200
+    assert response4.status_code == 200
+    assert response5.status_code == 200
+    assert response6.status_code == 200
 
 
 def test_all():
