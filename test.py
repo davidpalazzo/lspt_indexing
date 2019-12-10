@@ -735,8 +735,8 @@ def test_relevant_empty():
     '''
     test relevant on an empty database
     '''
-    API_ENDPOINT = 'http://localhost:5000/relevantDocs'
-    #  API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/relevantDocs'
+    #  API_ENDPOINT = 'http://localhost:5000/relevantDocs'
+    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:9643/relevantDocs'
     to_send = ["Cow"]
     response = requests.post(API_ENDPOINT, json=to_send)
     #  response = requests.get(API_ENDPOINT)
@@ -759,8 +759,8 @@ def test_relevant_one_line():
     Returns multiple documents
     Returns no documents as none exist
     '''
-    #  API_ENDPOINT = 'http://localhost:5000/relevantDocs'
-    #  API_ENDPOINT_ADD = 'http://localhost:5000/update'
+    #API_ENDPOINT = 'http://localhost:5000/relevantDocs'
+    #API_ENDPOINT_ADD = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/relevantDocs'
     API_ENDPOINT_ADD = 'http://lspt-index1.cs.rpi.edu:5000/update'
     test_data = {
@@ -771,8 +771,10 @@ def test_relevant_one_line():
     }
     to_send_1 = ["Broccoli"]
     to_send_2 = ["Good"]
-    requests.post(API_ENDPOINT_ADD, json=test_data)
-    requests.post(API_ENDPOINT_ADD, json=test_data_2)
+    a = requests.post(API_ENDPOINT_ADD, json=test_data)
+    b = requests.post(API_ENDPOINT_ADD, json=test_data_2)
+    print(b.text)
+    print(a.text)
     dl.debug_print_mr_collection()
     #  returns data 1
     response1 = requests.post(API_ENDPOINT, json=to_send_1)
@@ -792,10 +794,10 @@ def test_relevant_multi_line():
     Returns multiple documents
     Returns no documents as none exist
     '''
-    API_ENDPOINT = 'http://localhost:5000/relevantDocs'
-    API_ENDPOINT_ADD = 'http://localhost:5000/update'
-    #  API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/relevantDocs'
-    #  API_ENDPOINT_ADD = 'http://lspt-index1.cs.rpi.edu:5000/update'
+    #  API_ENDPOINT = 'http://localhost:5000/relevantDocs'
+    #  API_ENDPOINT_ADD = 'http://localhost:5000/update'
+    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/relevantDocs'
+    API_ENDPOINT_ADD = 'http://lspt-index1.cs.rpi.edu:5000/update'
     test_data_3 = {
         "add": REL_DATA_3
     }
@@ -829,22 +831,22 @@ def test_relevant_multi_line():
 def test_all():
     #  test all commands here
     #  return which ones fail, which ones don't
-    #  clear_up(dl)
-    #  test_add_empty()
-    #  test_add_one_line()
-    #  test_add_multi_line()
-    #  test_remove_empty()
-    #  test_remove_one_line()
-    #  test_remove_multiple_lines()
-    #  test_update_empty()
-    #  test_update_one_line()
-    #  test_update_multiplpe_line()
-    #  clear_up(dl)
-    #  test_relevant_empty()
+    clear_up(dl)
+    test_add_empty()
+    test_add_one_line()
+    test_add_multi_line()
+    test_remove_empty()
+    test_remove_one_line()
+    test_remove_multiple_lines()
+    test_update_empty()
+    test_update_one_line()
+    test_update_multiplpe_line()
+    clear_up(dl)
+    test_relevant_empty()
     print("After first test")
     test_relevant_one_line()
     print("After second test")
-    #  test_relevant_multi_line()
+    test_relevant_multi_line()
     print("After third test")
 
 
