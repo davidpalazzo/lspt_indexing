@@ -120,6 +120,8 @@ class LogicLayer:
         # loop through documents get, calculate the idf
         for content in contents:
             text, documents = content['_id'], content["value"]["documents"]
+            if len(documents) == 0:
+                return "Dictionary is empty"
             idf = calculateIDF(len(documents))
 
             ret[text] = dict()
