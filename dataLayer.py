@@ -136,6 +136,7 @@ class DataLayer:
         :return: True if all insert success, if one fail, raise DataBasePutFail Exception
         """
         try:
+            print("attempting to put words")
             # get the current time, map reduce will do mapping on the entry
             # with time latter then the current time
             last_update = time.time()

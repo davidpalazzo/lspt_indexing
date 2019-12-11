@@ -13,14 +13,14 @@ dl = DataLayer()
 
 DATA1 = {
     "DocumentID": "test_1",
-    "Words":{
+    "Words": {
         "NumWords": 8,
         "NumDistinctWords": 2,
         "WordCounts": [
             {
                 "Text": "Lambda",
                 "Count": 5,
-                "Occurences":[
+                "Occurences": [
                     1,
                     2,
                     3,
@@ -31,7 +31,7 @@ DATA1 = {
             {
                 "Text": "Cow",
                 "Count": 3,
-                "Occurences":[
+                "Occurences": [
                     10,
                     11,
                     12
@@ -39,11 +39,11 @@ DATA1 = {
             }
         ]
     },
-    "NGrams":{
-        "BiGrams":[
+    "NGrams": {
+        "BiGrams": [
 
         ],
-        "TriGrams":[
+        "TriGrams": [
 
         ]
     }
@@ -51,14 +51,14 @@ DATA1 = {
 
 DATA3 = {
     "DocumentID": "test_1",
-    "Words":{
+    "Words": {
         "NumWords": 6,
         "NumDistinctWords": 2,
         "WordCounts": [
             {
                 "Text": "Lambda",
                 "Count": 4,
-                "Occurences":[
+                "Occurences": [
                     1,
                     2,
                     3,
@@ -68,18 +68,18 @@ DATA3 = {
             {
                 "Text": "Cow",
                 "Count": 2,
-                "Occurences":[
+                "Occurences": [
                     10,
                     12
                 ]
             }
         ]
     },
-    "NGrams":{
-        "BiGrams":[
+    "NGrams": {
+        "BiGrams": [
 
         ],
-        "TriGrams":[
+        "TriGrams": [
 
         ]
     }
@@ -88,14 +88,14 @@ DATA3 = {
 
 DATA2 = {
     "DocumentID": "test_2",
-    "Words":{
+    "Words": {
         "NumWords": 9,
-        "NumDistinctWords":3,
-        "WordCounts":[
+        "NumDistinctWords": 3,
+        "WordCounts": [
             {
                 "Text": "Lambda",
-                "Count":3,
-                "Occurences":[
+                "Count": 3,
+                "Occurences": [
                     1,
                     3,
                     5
@@ -104,7 +104,7 @@ DATA2 = {
             {
                 "Text": "Cow",
                 "Count": 3,
-                "Occurences":[
+                "Occurences": [
                     8,
                     10,
                     12
@@ -113,7 +113,7 @@ DATA2 = {
             {
                 "Text": "Calculus",
                 "Count": 3,
-                "Occurences":[
+                "Occurences": [
                     2,
                     4,
                     6
@@ -121,34 +121,34 @@ DATA2 = {
             }
         ]
     },
-    "NGrams":{
-        "BiGrams":[
+    "NGrams": {
+        "BiGrams": [
             {
                 "Text": "Lambda Calculus",
-                "Count":3,
-                "Occurences":[
+                "Count": 3,
+                "Occurences": [
                     1,
                     3,
                     5
                 ]
             }
         ],
-        "TriGrams":[
+        "TriGrams": [
 
         ]
     }
 }
 
 DATA4 = {
-    "DocumentID":"test_2",
-    "Words":{
+    "DocumentID": "test_2",
+    "Words": {
         "NumWords": 7,
-        "NumDistinctWords":3,
-        "WordCounts":[
+        "NumDistinctWords": 3,
+        "WordCounts": [
             {
                 "Text": "Lambda",
-                "Count":2,
-                "Occurences":[
+                "Count": 2,
+                "Occurences": [
                     1,
                     3
                 ]
@@ -156,7 +156,7 @@ DATA4 = {
             {
                 "Text": "Cow",
                 "Count": 3,
-                "Occurences":[
+                "Occurences": [
                     8,
                     10,
                     12
@@ -165,93 +165,93 @@ DATA4 = {
             {
                 "Text": "Calculus",
                 "Count": 2,
-                "Occurences":[
+                "Occurences": [
                     2,
                     4
                 ]
             }
         ]
     },
-    "NGrams":{
-        "BiGrams":[
+    "NGrams": {
+        "BiGrams": [
             {
                 "Text": "Lambda Calculus",
-                "Count":2,
-                "Occurences":[
+                "Count": 2,
+                "Occurences": [
                     1,
                     4
                 ]
             }
         ],
-        "TriGrams":[
+        "TriGrams": [
 
         ]
     }
 }
 
 DATA5 = {
-    "DocumentID":"test_3",
-    "Words":{
-        "NumWords":6,
+    "DocumentID": "test_3",
+    "Words": {
+        "NumWords": 6,
         "NumDistinctWords": 3,
-        "WordCounts":[
+        "WordCounts": [
             {
                 "Text": "Cow",
-                "Count":2,
-                "Occurences":[
+                "Count": 2,
+                "Occurences": [
                     1,
                     4
                 ]
             },
             {
                 "Text": "Milk",
-                "Count":2,
-                "Occurences":[
+                "Count": 2,
+                "Occurences": [
                     2,
                     5
                 ]
             },
             {
                 "Text": "Good",
-                "Count":2,
-                "Occurences":[
+                "Count": 2,
+                "Occurences": [
                     3,
                     6
                 ]
             }
         ]
     },
-    "NGrams":{
-        "BiGrams":[
+    "NGrams": {
+        "BiGrams": [
             {
                 "Text": "Cow Milk",
-                "Count":2,
-                "Occurences":[
+                "Count": 2,
+                "Occurences": [
                     1,
                     4
                 ]
             },
             {
                 "Text": "Milk Good",
-                "Count":2,
-                "Occurences":[
+                "Count": 2,
+                "Occurences": [
                     2,
                     5
                 ]
             },
             {
                 "Text": "Good Cow",
-                "Count":1,
-                "Occurences":[
+                "Count": 1,
+                "Occurences": [
                     3
                 ]
             }
         ],
-        "TriGrams":[
+        "TriGrams": [
             {
-                "Text":"Cow Milk Good",
-                "Count":2,
-                "Occurences":[
+                "Text": "Cow Milk Good",
+                "Count": 2,
+                "Occurences": [
                     1,
                     4
                 ]
@@ -259,67 +259,67 @@ DATA5 = {
         ]
     }
 }
-DATA6= {
-    "DocumentID":"test_3",
-    "Words":{
-        "NumWords":5,
+DATA6 = {
+    "DocumentID": "test_3",
+    "Words": {
+        "NumWords": 5,
         "NumDistinctWords": 3,
-        "WordCounts":[
+        "WordCounts": [
             {
                 "Text": "Cow",
-                "Count":2,
-                "Occurences":[
+                "Count": 2,
+                "Occurences": [
                     1,
                     4
                 ]
             },
             {
                 "Text": "Milk",
-                "Count":2,
-                "Occurences":[
+                "Count": 2,
+                "Occurences": [
                     2,
                     5
                 ]
             },
             {
                 "Text": "Good",
-                "Count":2,
-                "Occurences":[
+                "Count": 2,
+                "Occurences": [
                     3
                 ]
             }
         ]
     },
-    "NGrams":{
-        "BiGrams":[
+    "NGrams": {
+        "BiGrams": [
             {
                 "Text": "Cow Milk",
-                "Count":2,
-                "Occurences":[
+                "Count": 2,
+                "Occurences": [
                     1,
                     4
                 ]
             },
             {
                 "Text": "Milk Good",
-                "Count":1,
-                "Occurences":[
+                "Count": 1,
+                "Occurences": [
                     2
                 ]
             },
             {
                 "Text": "Good Cow",
-                "Count":1,
-                "Occurences":[
+                "Count": 1,
+                "Occurences": [
                     3
                 ]
             }
         ],
-        "TriGrams":[
+        "TriGrams": [
             {
-                "Text":"Cow Milk Good",
-                "Count":1,
-                "Occurences":[
+                "Text": "Cow Milk Good",
+                "Count": 1,
+                "Occurences": [
                     1
                 ]
             }
@@ -327,96 +327,103 @@ DATA6= {
     }
 }
 
+
 def test_add_empty():
     '''
     test relevant on an empty database
     '''
     print("ADD TESTS")
-    #API_ENDPOINT = 'http://localhost:5000/update'
+    #  API_ENDPOINT = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
-    #test with cow
-    #test with jump
-    #test with fox
-    #test with random
+    #  test with cow
+    #  test with jump
+    #  test with fox
+    #  test with random
     to_add = {
-        "add":DATA1
+        "add": DATA1
     }
-    result = requests.post(API_ENDPOINT, json = to_add)
+    result = requests.post(API_ENDPOINT, json=to_add)
     print("Test empty")
     dl.debug_print_mr_collection()
     print(result.status_code)
     assert result.status_code == 200
-    
+
+
 def test_add_one_line():
     '''
     add parsed sample data to document see if all there
     do multiple adds
     try to add existing data
     '''
-    #API_ENDPOINT = 'http://localhost:5000/update'
+    #  API_ENDPOINT = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
-    #test with cow, returns documents 1 and 2
-    #test with jumped, returns documents 1 and 3
-    #test with fox, returns documents 3 and 4
-    #test with random, returns no documents
+    #  test with cow, returns documents 1 and 2
+    #  test with jumped, returns documents 1 and 3
+    #  test with fox, returns documents 3 and 4
+    #  test with random, returns no documents
     to_add = {
-        "add":DATA1
+        "add": DATA1
     }
     to_add2 = {
-        "add":DATA2
+        "add": DATA2
     }
-    result = requests.post(API_ENDPOINT, json = to_add)
-    result2 = requests.post(API_ENDPOINT, json = to_add2)
+    result = requests.post(API_ENDPOINT, json=to_add)
+    result2 = requests.post(API_ENDPOINT, json=to_add2)
     print("Test one line")
     dl.debug_print_mr_collection()
     assert result.status_code == 200
     assert result2.status_code == 200
-    
+
+
 def test_add_multi_line():
     '''
     add parsed sample data to document see if all there
     do multiple adds
     try to add existing data
     '''
-    #API_ENDPOINT = 'http://localhost:5000/update'
+    #  API_ENDPOINT = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
     to_add = {
-        "add":DATA1
+        "add": DATA1
     }
     to_add_2 = {
-        "add":DATA2
+        "add": DATA2
     }
     to_add_3 = {
-        "add":DATA5
+        "add": DATA5
     }
-    result = requests.post(API_ENDPOINT, json = to_add)
-    result2 = requests.post(API_ENDPOINT, json = to_add_2)
-    result3 = requests.post(API_ENDPOINT, json = to_add_3)
+    result = requests.post(API_ENDPOINT, json=to_add)
+    result2 = requests.post(API_ENDPOINT, json=to_add_2)
+    result3 = requests.post(API_ENDPOINT, json=to_add_3)
     print("Test multi line")
     dl.debug_print_mr_collection()
     assert result.status_code == 200
     assert result2.status_code == 200
     assert result3.status_code == 200
 
+
 '''
-A series of tests adding 
+A series of tests for the adding function
 '''
+
+
 def test_remove_empty():
     print("Remove Tests")
     '''
     test remove on an empty database
     '''
-    #API_ENDPOINT = 'http://localhost:5000/update'
+    #  API_ENDPOINT = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
     to_remove = {
-        "remove":DATA1
+        "remove": DATA1
     }
-    requests.post(API_ENDPOINT, json = to_remove)
-    result = requests.post(API_ENDPOINT, json = to_remove)
+    requests.post(API_ENDPOINT, json=to_remove)
+    result = requests.post(API_ENDPOINT, json=to_remove)
     print("After empty")
     dl.debug_print_mr_collection()
-    #all tests will return that database is empty
+    #  all tests will return that database is empty
     assert result.status_code == 200
+
 
 def test_remove_one_line():
     '''
@@ -424,23 +431,24 @@ def test_remove_one_line():
     do multiple removes
     try to remove non-existent data
     '''
-    #API_ENDPOINT = 'http://localhost:5000/update'
+    #  API_ENDPOINT = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
-    #test with document1, all trace of document one removed
-    #test with document1, document should not exist
-    #test with document5, document should not exist
-    #test with document3 and document4, remove all traces
+    #  test with document1, all trace of document one removed
+    #  test with document1, document should not exist
+    #  test with document5, document should not exist
+    #  test with document3 and document4, remove all traces
     re_add = {
-        "add":DATA1
+        "add": DATA1
     }
     remove = {
-        "remove":DATA1
+        "remove": DATA1
     }
-    requests.post(API_ENDPOINT, json = re_add)
-    result = requests.post(API_ENDPOINT, json = remove)
+    requests.post(API_ENDPOINT, json=re_add)
+    result = requests.post(API_ENDPOINT, json=remove)
     print("After one line")
     dl.debug_print_mr_collection()
     assert result.status_code == 200
+
 
 def test_remove_multiple_lines():
     '''
@@ -448,46 +456,48 @@ def test_remove_multiple_lines():
     do multiple removes
     try to remove non-existent data
     '''
-    #API_ENDPOINT = 'http://localhost:5000/update'
+    #  API_ENDPOINT = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
     re_add = {
-        "add":DATA1
+        "add": DATA1
     }
     remove = {
-        "remove":DATA1
+        "remove": DATA1
     }
     remove_2 = {
-        "remove":DATA2
+        "remove": DATA2
     }
     remove_3 = {
-        "remove":DATA5
+        "remove": DATA5
     }
-    requests.post(API_ENDPOINT, json = re_add)
-    result = requests.post(API_ENDPOINT, json = remove)
-    result_2 = requests.post(API_ENDPOINT, json = remove_2)
-    result_3 = requests.post(API_ENDPOINT, json = remove_3)
+    requests.post(API_ENDPOINT, json=re_add)
+    result = requests.post(API_ENDPOINT, json=remove)
+    result_2 = requests.post(API_ENDPOINT, json=remove_2)
+    result_3 = requests.post(API_ENDPOINT, json=remove_3)
     print("After multi_line")
     dl.debug_print_mr_collection()
     assert result.status_code == 200
     assert result_2.status_code == 200
     assert result_3.status_code == 200
-    
+
+
 def test_update_empty():
     '''
     test update on empty database
     '''
     print("Update tests")
-    #API_ENDPOINT = 'http://localhost:5000/update'
+    #  API_ENDPOINT = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
-    #all tests will fail as it's empty
+    #  all tests will fail as it's empty
     to_update = {
-        "remove":DATA1,
-        "add":DATA3
+        "remove": DATA1,
+        "add": DATA3
     }
     print("update empty")
-    result = requests.post(API_ENDPOINT, json = to_update)
+    result = requests.post(API_ENDPOINT, json=to_update)
     dl.debug_print_mr_collection()
     assert result.status_code == 200
+
 
 def test_update_one_line():
     '''
@@ -495,29 +505,30 @@ def test_update_one_line():
     do multiple removes
     try to remove non-existent data
     '''
-    #API_ENDPOINT = 'http://localhost:5000/update'
+    #  API_ENDPOINT = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
-    #test with document1 without cow, cow should no longer be in d1
-    #test with document2, without cow, cow should no lonber be in d2
-    #test with document3, without white and fox, both should no longer be in d3
-    #test with document4, without small, should no longer be in d4
-    #attempt to update a document that doesn't exist, should return error
+    #  test with document1 without cow, cow should no longer be in d1
+    #  test with document2, without cow, cow should no lonber be in d2
+    #  test with document3, without white and fox, no longer in d3
+    #  test with document4, without small, should no longer be in d4
+    #  attempt to update a document that doesn't exist, should return error
     to_remove = {
-        "remove":DATA3
+        "remove": DATA3
     }
     to_add = {
-        "add":DATA1
+        "add": DATA1
     }
     to_update = {
-        "remove":DATA1,
-        "add":DATA3
+        "remove": DATA1,
+        "add": DATA3
     }
     print("update one line")
-    requests.post(API_ENDPOINT, json = to_remove)
-    requests.post(API_ENDPOINT, json = to_add)
-    result = requests.post(API_ENDPOINT, json = to_update)
+    requests.post(API_ENDPOINT, json=to_remove)
+    requests.post(API_ENDPOINT, json=to_add)
+    result = requests.post(API_ENDPOINT, json=to_update)
     dl.debug_print_mr_collection()
     assert result.status_code == 200
+
 
 def test_update_multiplpe_line():
     '''
@@ -525,50 +536,52 @@ def test_update_multiplpe_line():
     do multiple removes
     try to remove non-existent data
     '''
-    #API_ENDPOINT = 'http://localhost:5000/update'
+    #  API_ENDPOINT = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
-    #test updating d1 multiple tiems
-    #test updating d2 multiple times
-    #test updating d3 multiple times
+    #  test updating d1 multiple tiems
+    #  test updating d2 multiple times
+    #  test updating d3 multiple times
     to_add = {
-        "add":DATA2
+        "add": DATA2
     }
     to_update = {
-        "remove":DATA2,
-        "add":DATA4
+        "remove": DATA2,
+        "add": DATA4
     }
     to_add_2 = {
-        "add":DATA5
+        "add": DATA5
     }
     to_update_2 = {
-        "remove":DATA5,
-        "add":DATA6
+        "remove": DATA5,
+        "add": DATA6
     }
     print("update multi line")
-    requests.post(API_ENDPOINT, json = to_add)
-    result = requests.post(API_ENDPOINT, json = to_update)
-    requests.post(API_ENDPOINT, json = to_add_2)
-    result2 = requests.post(API_ENDPOINT, json = to_update_2)
+    requests.post(API_ENDPOINT, json=to_add)
+    result = requests.post(API_ENDPOINT, json=to_update)
+    requests.post(API_ENDPOINT, json=to_add_2)
+    result2 = requests.post(API_ENDPOINT, json=to_update_2)
     dl.debug_print_mr_collection()
     print(result.text)
     assert result.status_code == 200
     assert result2.status_code == 200
 
+
 '''
 A series of tests testing the relevant document function
-It tests on an empty database, on single line documents, and multi-line documents
+It tests on an empty database, on single line documents,
+and multi-line documents
 '''
 
 REL_DATA = {
-    "DocumentID":"data1",
-    "Words":{
-        "NumWords":5,
-        "NumDistinctWords":2,
-        "WordCounts":[
+    "DocumentID": "data1",
+    "Words": {
+        "NumWords": 5,
+        "NumDistinctWords": 2,
+        "WordCounts": [
             {
                 "Text": "Broccoli",
                 "Count": 3,
-                "Occurences":[
+                "Occurences": [
                     1,
                     2,
                     3
@@ -576,34 +589,34 @@ REL_DATA = {
             },
             {
                 "Text": "Good",
-                "Count":2,
-                "Occurences":[
+                "Count": 2,
+                "Occurences": [
                     4,
                     5
                 ]
             }
         ]
     },
-    "NGrams":{
-        "BiGrams":[
+    "NGrams": {
+        "BiGrams": [
 
         ],
-        'TriGrams':[
+        'TriGrams': [
 
         ]
     }
 }
 
 REL_DATA_2 = {
-    "DocumentID":"data2",
-    "Words":{
-        "NumWords":8,
-        "NumDistinctWords":2,
-        "WordCounts":[
+    "DocumentID": "data2",
+    "Words": {
+        "NumWords": 8,
+        "NumDistinctWords": 2,
+        "WordCounts": [
             {
                 "Text": "Good",
                 "Count": 4,
-                "Occurences":[
+                "Occurences": [
                     1,
                     3,
                     5,
@@ -613,7 +626,7 @@ REL_DATA_2 = {
             {
                 "Text": "Food",
                 "Count": 4,
-                "Occurences":[
+                "Occurences": [
                     2,
                     4,
                     6,
@@ -622,12 +635,12 @@ REL_DATA_2 = {
             }
         ]
     },
-    "NGrams":{
-        "BiGrams":[
+    "NGrams": {
+        "BiGrams": [
             {
                 "Text": "Good Food",
                 "Count": 4,
-                "Occurences":[
+                "Occurences": [
                     1,
                     3,
                     5,
@@ -637,76 +650,77 @@ REL_DATA_2 = {
             {
                 "Text": "Food Good",
                 "Count": 3,
-                "Occurences":[
+                "Occurences": [
                     2,
                     4,
                     6
                 ]
             }
         ],
-        "TriGrams":[
-            
+        "TriGrams": [
+
         ]
     }
 }
 
 REL_DATA_3 = {
-    "DocumentID":"data3",
-    "Words":{
-        "NumWords":6,
-        "NumDistinctWords":3,
-        "WordCounts":[
+    "DocumentID": "data3",
+    "Words": {
+        "NumWords": 6,
+        "NumDistinctWords": 3,
+        "WordCounts": [
             {
                 "Text": "Good",
-                "Count":1,
-                "Occurences":[
+                "Count": 1,
+                "Occurences": [
                     1
                 ]
             },
             {
                 "Text": "Coding",
-                "Count":1,
-                "Occurences":[
+                "Count": 1,
+                "Occurences": [
                     2
                 ]
             },
             {
-                "Text":"Practices",
-                "Count":3,
-                "Occurences":[
+                "Text": "Practices",
+                "Count": 3,
+                "Occurences": [
                     3
                 ]
             }
         ]
     },
-    "NGrams":{
-            "BiGrams":[
+    "NGrams": {
+            "BiGrams": [
                 {
                     "Text": "Good Coding",
-                    "Count":1,
-                    "Occurences":[
+                    "Count": 1,
+                    "Occurences": [
                         1
                     ]
                 },
                 {
                     "Text": "Coding Practices",
-                    "Count":1,
-                    "Occurences":[
+                    "Count": 1,
+                    "Occurences": [
                         2
                     ]
                 }
             ],
-            "TriGrams":[
+            "TriGrams": [
                 {
                     "Text": "Good Coding Practices",
-                    "Count":1,
-                    "Occurences":[
+                    "Count": 1,
+                    "Occurences": [
                         1
                     ]
                 }
             ]
     }
 }
+
 
 def clear_up(data_layer):
     data_layer.collection.delete_many({})
@@ -716,25 +730,28 @@ def clear_up(data_layer):
     data_layer.collection.drop()
     data_layer.mr_collection.drop()
 
+
 def test_relevant_empty():
     '''
     test relevant on an empty database
     '''
-    #API_ENDPOINT = 'http://localhost:5000/relevantDocs'
-    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/relevantDocs'
+    #  API_ENDPOINT = 'http://localhost:5000/relevantDocs'
+    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:9643/relevantDocs'
     to_send = ["Cow"]
     response = requests.post(API_ENDPOINT, json=to_send)
-    #response = requests.get(API_ENDPOINT)
+    #  response = requests.get(API_ENDPOINT)
     print(response.text)
     if response:
         print('Success!')
     else:
         print('error')
     print("gets here")
-    #test with cow
-    #test with jump
-    #test with fox
-    #test with random
+    #  test with cow
+    #  test with jump
+    #  test with fox
+    #  test with random
+    assert response.status_code == 200
+
 
 def test_relevant_one_line():
     '''
@@ -747,27 +764,29 @@ def test_relevant_one_line():
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/relevantDocs'
     API_ENDPOINT_ADD = 'http://lspt-index1.cs.rpi.edu:5000/update'
     test_data = {
-        "add":REL_DATA
+        "add": REL_DATA
     }
-    test_data_2 ={
-        "add":REL_DATA_2
+    test_data_2 = {
+        "add": REL_DATA_2
     }
     to_send_1 = ["Broccoli"]
     to_send_2 = ["Good"]
-    requests.post(API_ENDPOINT_ADD, json = test_data)
-    requests.post(API_ENDPOINT_ADD, json = test_data_2)
+    a = requests.post(API_ENDPOINT_ADD, json=test_data)
+    b = requests.post(API_ENDPOINT_ADD, json=test_data_2)
+    print(b.text)
+    print(a.text)
     dl.debug_print_mr_collection()
-    response1 = requests.post(API_ENDPOINT, json=to_send_1) #return data 1
+    #  returns data 1
+    response1 = requests.post(API_ENDPOINT, json=to_send_1)
     print("After first post request")
     print(response1.text)
-    response2 = requests.post(API_ENDPOINT, json=to_send_2) #return data 1 and 2
+    #  returns data 1 and 2
+    response2 = requests.post(API_ENDPOINT, json=to_send_2)
     print(response2.text)
-    #dl.debug_print_mr_collection()
-    #test with cow
-    #test with jump
-    #test with fox
-    #test with random
-    assert 1 == 1
+    #  dl.debug_print_mr_collection()
+    assert response1.status_code == 200
+    assert response2.status_code == 200
+
 
 def test_relevant_multi_line():
     '''
@@ -775,8 +794,8 @@ def test_relevant_multi_line():
     Returns multiple documents
     Returns no documents as none exist
     '''
-    #API_ENDPOINT = 'http://localhost:5000/relevantDocs'
-    #API_ENDPOINT_ADD = 'http://localhost:5000/update'
+    #  API_ENDPOINT = 'http://localhost:5000/relevantDocs'
+    #  API_ENDPOINT_ADD = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/relevantDocs'
     API_ENDPOINT_ADD = 'http://lspt-index1.cs.rpi.edu:5000/update'
     test_data_3 = {
@@ -789,39 +808,53 @@ def test_relevant_multi_line():
     to_send_5 = ["Good Coding"]
     to_send_6 = ["Good Coding Practices"]
     requests.post(API_ENDPOINT_ADD, json=test_data_3)
-    response1 = requests.post(API_ENDPOINT, json = to_send_1)#data1, data2, data3
+    #  returns data1, data2, data3
+    response1 = requests.post(API_ENDPOINT, json=to_send_1)
     print(response1.text)
-    response2 = requests.post(API_ENDPOINT, json = to_send_2)#data2
+    #  returns data2
+    response2 = requests.post(API_ENDPOINT, json=to_send_2)
     print(response2.text)
-    response3 = requests.post(API_ENDPOINT, json = to_send_3)#data3
+    #  returns data3
+    response3 = requests.post(API_ENDPOINT, json=to_send_3)
     print(response3.text)
-    response4 = requests.post(API_ENDPOINT, json = to_send_4)#data2
+    #  returns data2
+    response4 = requests.post(API_ENDPOINT, json=to_send_4)
     print(response4.text)
-    response5 = requests.post(API_ENDPOINT, json = to_send_5)#data3
+    #  returns data3
+    response5 = requests.post(API_ENDPOINT, json=to_send_5)
     print(response5.text)
-    response6 = requests.post(API_ENDPOINT, json = to_send_6)#data3
+    #  returns data3
+    response6 = requests.post(API_ENDPOINT, json=to_send_6)
     print(response6.text)
-6
+    assert response1.status_code == 200
+    assert response2.status_code == 200
+    assert response3.status_code == 200
+    assert response4.status_code == 200
+    assert response5.status_code == 200
+    assert response6.status_code == 200
+
+
 def test_all():
-    #test all commands here
-    #return which ones fail, which ones don't
-    #clear_up(dl)
-    #test_add_empty()
-    #test_add_one_line()
-    #test_add_multi_line()
-    #test_remove_empty()
-    #test_remove_one_line()
-    #test_remove_multiple_lines()
-    #test_update_empty()
-    #test_update_one_line()
-    #test_update_multiplpe_line()
-    #clear_up(dl)
+    #  test all commands here
+    #  return which ones fail, which ones don't
+    clear_up(dl)
+    test_add_empty()
+    test_add_one_line()
+    test_add_multi_line()
+    test_remove_empty()
+    test_remove_one_line()
+    test_remove_multiple_lines()
+    test_update_empty()
+    test_update_one_line()
+    test_update_multiplpe_line()
+    clear_up(dl)
     test_relevant_empty()
     print("After first test")
     test_relevant_one_line()
     print("After second test")
-    #test_relevant_multi_line()
+    test_relevant_multi_line()
     print("After third test")
 
+
 if __name__ == "__main__":
-    test_all() 
+    test_all()

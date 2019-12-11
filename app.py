@@ -29,8 +29,9 @@ def relevantDocs():
             assume it is an error and do no work.
     '''
     if request.method == 'POST':
-        jsonData = request.form
+        jsonData = request.get_json()
         result = ll.getDocs(jsonData)
+        print(result)
         return result
 
 
@@ -49,6 +50,7 @@ def update():
     '''
     if request.method == 'POST':
         jsonData = request.get_json()
+        print(jsonData)
         # if the request's remove or add section is non existant or null,
         # do nothing
         if jsonData.get('remove') and jsonData['remove'] is not None:
