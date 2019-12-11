@@ -335,10 +335,7 @@ def test_add_empty():
     print("ADD TESTS")
     #  API_ENDPOINT = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
-    #  test with cow
-    #  test with jump
-    #  test with fox
-    #  test with random
+    #  Testing adding new data
     to_add = {
         "add": DATA1
     }
@@ -357,10 +354,7 @@ def test_add_one_line():
     '''
     #  API_ENDPOINT = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
-    #  test with cow, returns documents 1 and 2
-    #  test with jumped, returns documents 1 and 3
-    #  test with fox, returns documents 3 and 4
-    #  test with random, returns no documents
+    #  Test adding new and existing data
     to_add = {
         "add": DATA1
     }
@@ -383,6 +377,8 @@ def test_add_multi_line():
     '''
     #  API_ENDPOINT = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
+    #  Test adding new and existing data
+    #  Test adding complicated data
     to_add = {
         "add": DATA1
     }
@@ -414,10 +410,10 @@ def test_remove_empty():
     '''
     #  API_ENDPOINT = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
+    #  Test removing data
     to_remove = {
         "remove": DATA1
     }
-    requests.post(API_ENDPOINT, json=to_remove)
     result = requests.post(API_ENDPOINT, json=to_remove)
     print("After empty")
     dl.debug_print_mr_collection()
@@ -433,10 +429,7 @@ def test_remove_one_line():
     '''
     #  API_ENDPOINT = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
-    #  test with document1, all trace of document one removed
-    #  test with document1, document should not exist
-    #  test with document5, document should not exist
-    #  test with document3 and document4, remove all traces
+    #  Test removing one line after re_adding it
     re_add = {
         "add": DATA1
     }
@@ -458,8 +451,15 @@ def test_remove_multiple_lines():
     '''
     #  API_ENDPOINT = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
+    #  Test removing all the data after re_adding it
     re_add = {
         "add": DATA1
+    }
+    re_add_2 = {
+        "add": DATA2
+    }
+    re_add_3 = {
+        "add": DATA5
     }
     remove = {
         "remove": DATA1
@@ -488,7 +488,7 @@ def test_update_empty():
     print("Update tests")
     #  API_ENDPOINT = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
-    #  all tests will fail as it's empty
+    #  Test updating an empty database
     to_update = {
         "remove": DATA1,
         "add": DATA3
@@ -507,11 +507,6 @@ def test_update_one_line():
     '''
     #  API_ENDPOINT = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
-    #  test with document1 without cow, cow should no longer be in d1
-    #  test with document2, without cow, cow should no lonber be in d2
-    #  test with document3, without white and fox, no longer in d3
-    #  test with document4, without small, should no longer be in d4
-    #  attempt to update a document that doesn't exist, should return error
     to_remove = {
         "remove": DATA3
     }
@@ -523,6 +518,7 @@ def test_update_one_line():
         "add": DATA3
     }
     print("update one line")
+    #  remove the existing data, and then update data1
     requests.post(API_ENDPOINT, json=to_remove)
     requests.post(API_ENDPOINT, json=to_add)
     result = requests.post(API_ENDPOINT, json=to_update)
@@ -538,9 +534,7 @@ def test_update_multiplpe_line():
     '''
     #  API_ENDPOINT = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/update'
-    #  test updating d1 multiple tiems
-    #  test updating d2 multiple times
-    #  test updating d3 multiple times
+    #  Re_add the data and update Data2 and Data5
     to_add = {
         "add": DATA2
     }
@@ -560,8 +554,8 @@ def test_update_multiplpe_line():
     result = requests.post(API_ENDPOINT, json=to_update)
     requests.post(API_ENDPOINT, json=to_add_2)
     result2 = requests.post(API_ENDPOINT, json=to_update_2)
+    #  Print the data to confirm that it works
     dl.debug_print_mr_collection()
-    print(result.text)
     assert result.status_code == 200
     assert result2.status_code == 200
 
@@ -735,21 +729,11 @@ def test_relevant_empty():
     '''
     test relevant on an empty database
     '''
-    #  API_ENDPOINT = 'http://localhost:5000/relevantDocs'
-    API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:9643/relevantDocs'
+    API_ENDPOINT = 'http://localhost:5000/relevantDocs'
+    #  API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:9643/relevantDocs'
     to_send = ["Cow"]
     response = requests.post(API_ENDPOINT, json=to_send)
-    #  response = requests.get(API_ENDPOINT)
-    print(response.text)
-    if response:
-        print('Success!')
-    else:
-        print('error')
-    print("gets here")
-    #  test with cow
-    #  test with jump
-    #  test with fox
-    #  test with random
+    #  Confirm that it will not attempt to remove empty data
     assert response.status_code == 200
 
 
@@ -759,8 +743,8 @@ def test_relevant_one_line():
     Returns multiple documents
     Returns no documents as none exist
     '''
-    #API_ENDPOINT = 'http://localhost:5000/relevantDocs'
-    #API_ENDPOINT_ADD = 'http://localhost:5000/update'
+    #  API_ENDPOINT = 'http://localhost:5000/relevantDocs'
+    #  API_ENDPOINT_ADD = 'http://localhost:5000/update'
     API_ENDPOINT = 'http://lspt-index1.cs.rpi.edu:5000/relevantDocs'
     API_ENDPOINT_ADD = 'http://lspt-index1.cs.rpi.edu:5000/update'
     test_data = {
@@ -776,11 +760,11 @@ def test_relevant_one_line():
     print(b.text)
     print(a.text)
     dl.debug_print_mr_collection()
-    #  returns data 1
+    #  Broccoli returns data 1
     response1 = requests.post(API_ENDPOINT, json=to_send_1)
     print("After first post request")
     print(response1.text)
-    #  returns data 1 and 2
+    #  Good returns data 1 and 2
     response2 = requests.post(API_ENDPOINT, json=to_send_2)
     print(response2.text)
     #  dl.debug_print_mr_collection()
@@ -808,22 +792,22 @@ def test_relevant_multi_line():
     to_send_5 = ["Good Coding"]
     to_send_6 = ["Good Coding Practices"]
     requests.post(API_ENDPOINT_ADD, json=test_data_3)
-    #  returns data1, data2, data3
+    #  Good returns data1, data2, and data3
     response1 = requests.post(API_ENDPOINT, json=to_send_1)
     print(response1.text)
-    #  returns data2
+    #  Food returns data2
     response2 = requests.post(API_ENDPOINT, json=to_send_2)
     print(response2.text)
-    #  returns data3
+    #  Practices returns data3
     response3 = requests.post(API_ENDPOINT, json=to_send_3)
     print(response3.text)
-    #  returns data2
+    #  Good Food returns data2
     response4 = requests.post(API_ENDPOINT, json=to_send_4)
     print(response4.text)
-    #  returns data3
+    #  Good Coding returns data3
     response5 = requests.post(API_ENDPOINT, json=to_send_5)
     print(response5.text)
-    #  returns data3
+    #  Good Coding Practices returns data3
     response6 = requests.post(API_ENDPOINT, json=to_send_6)
     print(response6.text)
     assert response1.status_code == 200
@@ -841,9 +825,11 @@ def test_all():
     test_add_empty()
     test_add_one_line()
     test_add_multi_line()
+    clear_up(dl)
     test_remove_empty()
     test_remove_one_line()
     test_remove_multiple_lines()
+    clear_up(dl)
     test_update_empty()
     test_update_one_line()
     test_update_multiplpe_line()

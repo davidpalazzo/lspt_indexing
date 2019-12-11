@@ -31,8 +31,7 @@ def relevantDocs():
     if request.method == 'POST':
         jsonData = request.get_json()
         result = ll.getDocs(jsonData)
-        print(result)
-        return result
+        return json.dumps(result)
 
 
 @app.route('/update', methods=['POST'])
@@ -51,15 +50,15 @@ def update():
     if request.method == 'POST':
         jsonData = request.get_json()
         print(jsonData)
-        # if the request's remove or add section is non existant or null,
-        # do nothing
+        #  if the request's remove or add section is non existant or null,
+        #  do nothing
         if jsonData.get('remove') and jsonData['remove'] is not None:
             ll.removeDoc(jsonData['remove'])
         if jsonData.get('add') and jsonData['add'] is not None:
             ll.addDoc(jsonData['add'])
         return "update post recieved"
 
-# helper functions should go below this line, but none yet
+#  helper functions should go below this line, but none yet
 
 
 if __name__ == '__main__':
